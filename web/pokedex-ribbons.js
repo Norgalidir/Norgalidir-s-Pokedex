@@ -1,0 +1,173 @@
+// Ribbons and marks a Pokémon can carry, grouped for display.
+// Each item is [name, where it is earned]. Ribbons first appeared in
+// Generation III; marks were added in Sword and Shield.
+window.RIBBONS = [
+  {cat:'League and champion', items:[
+    ['Champion Ribbon','Enter the Hall of Fame — Ruby, Sapphire, Emerald, FireRed, LeafGreen'],
+    ['Sinnoh Champion Ribbon','Enter the Hall of Fame — Diamond, Pearl, Platinum'],
+    ['Kalos Champion Ribbon','Enter the Hall of Fame — X and Y'],
+    ['Hoenn Champion Ribbon','Enter the Hall of Fame — Omega Ruby and Alpha Sapphire'],
+    ['Alola Champion Ribbon','Become Champion — Sun, Moon, Ultra Sun, Ultra Moon'],
+    ['Galar Champion Ribbon','Become Champion — Sword and Shield'],
+    ['Paldea Champion Ribbon','Become Champion — Scarlet and Violet'],
+    ['Twinkling Star Ribbon','Win a Master Rank super contest — Brilliant Diamond and Shining Pearl'],
+    ['Legend Ribbon','Defeat Mt. Battle or the Pokémon Colosseum without a loss'],
+    ['Tower Master Ribbon','Reach Master Ball tier in the Battle Tower — Sword and Shield'],
+    ['Master Rank Ribbon','Win in Master Ball tier of ranked battles — Sword and Shield'],
+    ['Once-in-a-Lifetime Ribbon','Gift from a trainer in the Pokémon League — Scarlet and Violet'],
+    ['Partner Ribbon','Gift to a Pokémon you have travelled with — Scarlet and Violet']
+  ]},
+  {cat:'Battle facilities', items:[
+    ['Winning Ribbon','Clear Battle Tower Level 50 — Generation III'],
+    ['Victory Ribbon','Clear Battle Tower Open Level — Generation III'],
+    ['Ability Ribbon','Defeat the Tower Tycoon — Generation IV'],
+    ['Great Ability Ribbon','Defeat the Tower Tycoon a second time — Generation IV'],
+    ['Double Ability Ribbon','Win 50 in a row in Battle Tower doubles — Generation IV'],
+    ['Multi Ability Ribbon','Win 50 in a row in Battle Tower multi battles — Generation IV'],
+    ['Pair Ability Ribbon','Win 50 in a row with a friend in Battle Tower multis — Generation IV'],
+    ['World Ability Ribbon','Win 50 in a row in the Wi-Fi Battle Room — Generation IV'],
+    ['Skillful Battler Ribbon','Clear the Battle Maison or Battle Tree regular rules'],
+    ['Expert Battler Ribbon','Clear the Battle Maison or Battle Tree super rules'],
+    ['Battle Tree Great Ribbon','Defeat the Battle Tree Legends — Sun, Moon, Ultra Sun, Ultra Moon'],
+    ['Battle Tree Master Ribbon','Win 50 in a row in Super battles — Battle Tree'],
+    ['Battle Royal Master Ribbon','Win at Master rank in the Battle Royal Dome — Sun and Moon']
+  ]},
+  {cat:'Hoenn contests', items:[
+    ['Cool Ribbon','Win a Normal Rank Cool contest — Generation III'],
+    ['Cool Ribbon Super','Win a Super Rank Cool contest'],
+    ['Cool Ribbon Hyper','Win a Hyper Rank Cool contest'],
+    ['Cool Ribbon Master','Win a Master Rank Cool contest'],
+    ['Beauty Ribbon','Win a Normal Rank Beauty contest — Generation III'],
+    ['Beauty Ribbon Super','Win a Super Rank Beauty contest'],
+    ['Beauty Ribbon Hyper','Win a Hyper Rank Beauty contest'],
+    ['Beauty Ribbon Master','Win a Master Rank Beauty contest'],
+    ['Cute Ribbon','Win a Normal Rank Cute contest — Generation III'],
+    ['Cute Ribbon Super','Win a Super Rank Cute contest'],
+    ['Cute Ribbon Hyper','Win a Hyper Rank Cute contest'],
+    ['Cute Ribbon Master','Win a Master Rank Cute contest'],
+    ['Smart Ribbon','Win a Normal Rank Smart contest — Generation III'],
+    ['Smart Ribbon Super','Win a Super Rank Smart contest'],
+    ['Smart Ribbon Hyper','Win a Hyper Rank Smart contest'],
+    ['Smart Ribbon Master','Win a Master Rank Smart contest'],
+    ['Tough Ribbon','Win a Normal Rank Tough contest — Generation III'],
+    ['Tough Ribbon Super','Win a Super Rank Tough contest'],
+    ['Tough Ribbon Hyper','Win a Hyper Rank Tough contest'],
+    ['Tough Ribbon Master','Win a Master Rank Tough contest'],
+    ['Artist Ribbon','Have your Master Rank winner painted for the Lilycove Museum']
+  ]},
+  {cat:'Sinnoh super contests', items:[
+    ['Cool Ribbon (Sinnoh)','Win a Normal Rank Cool super contest'],
+    ['Cool Ribbon Great','Win a Great Rank Cool super contest'],
+    ['Cool Ribbon Ultra','Win an Ultra Rank Cool super contest'],
+    ['Cool Ribbon Master (Sinnoh)','Win a Master Rank Cool super contest'],
+    ['Beauty Ribbon (Sinnoh)','Win a Normal Rank Beauty super contest'],
+    ['Beauty Ribbon Great','Win a Great Rank Beauty super contest'],
+    ['Beauty Ribbon Ultra','Win an Ultra Rank Beauty super contest'],
+    ['Beauty Ribbon Master (Sinnoh)','Win a Master Rank Beauty super contest'],
+    ['Cute Ribbon (Sinnoh)','Win a Normal Rank Cute super contest'],
+    ['Cute Ribbon Great','Win a Great Rank Cute super contest'],
+    ['Cute Ribbon Ultra','Win an Ultra Rank Cute super contest'],
+    ['Cute Ribbon Master (Sinnoh)','Win a Master Rank Cute super contest'],
+    ['Smart Ribbon (Sinnoh)','Win a Normal Rank Smart super contest'],
+    ['Smart Ribbon Great','Win a Great Rank Smart super contest'],
+    ['Smart Ribbon Ultra','Win an Ultra Rank Smart super contest'],
+    ['Smart Ribbon Master (Sinnoh)','Win a Master Rank Smart super contest'],
+    ['Tough Ribbon (Sinnoh)','Win a Normal Rank Tough super contest'],
+    ['Tough Ribbon Great','Win a Great Rank Tough super contest'],
+    ['Tough Ribbon Ultra','Win an Ultra Rank Tough super contest'],
+    ['Tough Ribbon Master (Sinnoh)','Win a Master Rank Tough super contest']
+  ]},
+  {cat:'Kalos and Hoenn remake contests', items:[
+    ['Contest Star Ribbon','Win Master Rank in all five conditions — Omega Ruby and Alpha Sapphire'],
+    ['Coolness Master Ribbon','Win a Master Rank Coolness contest — Omega Ruby and Alpha Sapphire'],
+    ['Beauty Master Ribbon','Win a Master Rank Beauty contest — Omega Ruby and Alpha Sapphire'],
+    ['Cuteness Master Ribbon','Win a Master Rank Cuteness contest — Omega Ruby and Alpha Sapphire'],
+    ['Cleverness Master Ribbon','Win a Master Rank Cleverness contest — Omega Ruby and Alpha Sapphire'],
+    ['Toughness Master Ribbon','Win a Master Rank Toughness contest — Omega Ruby and Alpha Sapphire']
+  ]},
+  {cat:'Care and training', items:[
+    ['Effort Ribbon','Max out its effort values, then visit the right NPC'],
+    ['Best Friends Ribbon','Max out its friendship, then visit the right NPC — Generation VI onward'],
+    ['Training Ribbon','Clear every regimen in Super Training — X, Y, Omega Ruby, Alpha Sapphire'],
+    ['Footprint Ribbon','Have high friendship when shown to Dr. Footstep — Generation IV'],
+    ['Alert Ribbon','Bought on Mondays in Sunyshore City — Generation IV'],
+    ['Shock Ribbon','Bought on Tuesdays in Sunyshore City'],
+    ['Downcast Ribbon','Bought on Wednesdays in Sunyshore City'],
+    ['Careless Ribbon','Bought on Thursdays in Sunyshore City'],
+    ['Relax Ribbon','Bought on Fridays in Sunyshore City'],
+    ['Snooze Ribbon','Bought on Saturdays in Sunyshore City'],
+    ['Smile Ribbon','Bought on Sundays in Sunyshore City'],
+    ['Gorgeous Ribbon','Bought in Pastoria City — Generation IV'],
+    ['Royal Ribbon','Bought in Pastoria City — Generation IV'],
+    ['Gorgeous Royal Ribbon','Bought in Pastoria City — Generation IV'],
+    ['Record Ribbon','Record Mixing in Pokémon Emerald'],
+    ['Country Ribbon','Event or special distribution'],
+    ['National Ribbon','Purify a Shadow Pokémon — Colosseum and XD'],
+    ['Earth Ribbon','Win 100 in a row at Mt. Battle — Colosseum and XD'],
+    ['World Ribbon','Event or special distribution']
+  ]},
+  {cat:'Events and memories', items:[
+    ['Classic Ribbon','Event distribution'],
+    ['Premier Ribbon','Event distribution'],
+    ['Event Ribbon','Event distribution'],
+    ['Birthday Ribbon','Event distribution'],
+    ['Special Ribbon','Event distribution'],
+    ['Souvenir Ribbon','Event distribution'],
+    ['Wishing Ribbon','Event distribution'],
+    ['Festival Ribbon','Event distribution'],
+    ['Carnival Ribbon','Event distribution'],
+    ['Red Ribbon','Event distribution'],
+    ['Green Ribbon','Event distribution'],
+    ['Blue Ribbon','Event distribution'],
+    ['Battle Champion Ribbon','Official tournament prize'],
+    ['Regional Champion Ribbon','Official tournament prize'],
+    ['National Champion Ribbon','Official tournament prize'],
+    ['World Champion Ribbon','Official tournament prize'],
+    ['Contest Memory Ribbon','Carried over from Generation III–IV contest ribbons'],
+    ['Battle Memory Ribbon','Carried over from Generation III–IV battle ribbons']
+  ]}
+];
+
+// Marks — Sword and Shield onward. A Pokémon carries at most one.
+window.MARKS = [
+  {cat:'Time of day', items:[
+    ['Lunchtime Mark','Caught in the afternoon'],
+    ['Sleepy-Time Mark','Caught at night'],
+    ['Dusk Mark','Caught in the evening'],
+    ['Dawn Mark','Caught in the morning']
+  ]},
+  {cat:'Weather', items:[
+    ['Cloudy Mark','Caught in overcast weather'],
+    ['Rainy Mark','Caught in the rain'],
+    ['Stormy Mark','Caught in a thunderstorm'],
+    ['Snowy Mark','Caught in the snow'],
+    ['Blizzard Mark','Caught in a blizzard'],
+    ['Dry Mark','Caught in intense sunlight'],
+    ['Sandstorm Mark','Caught in a sandstorm'],
+    ['Misty Mark','Caught in fog']
+  ]},
+  {cat:'Special', items:[
+    ['Destiny Mark','Caught on your birthday'],
+    ['Fishing Mark','Caught while fishing'],
+    ['Curry Mark','Caught at your camp — Sword and Shield'],
+    ['Uncommon Mark','Rare catch — about 1 in 50'],
+    ['Rare Mark','Very rare catch — about 1 in 1,000'],
+    ['Itemfinder Mark','Scarlet and Violet — found holding an item'],
+    ['Partner Mark','Scarlet and Violet — walked with you'],
+    ['Gourmand Mark','Scarlet and Violet — shared a picnic'],
+    ['Alpha Mark','Scarlet and Violet — a caught Alpha'],
+    ['Mightiest Mark','Scarlet and Violet — a 7-star Tera Raid boss'],
+    ['Titan Mark','Scarlet and Violet — a Titan Pokémon'],
+    ['Jumbo Mark','Scarlet and Violet — the largest possible size'],
+    ['Mini Mark','Scarlet and Violet — the smallest possible size']
+  ]},
+  {cat:'Personality', items:[
+    ['Rowdy Mark',''],['Absent-Minded Mark',''],['Jittery Mark',''],['Excited Mark',''],
+    ['Charismatic Mark',''],['Calmness Mark',''],['Intense Mark',''],['Zoned-Out Mark',''],
+    ['Joyful Mark',''],['Angry Mark',''],['Smiley Mark',''],['Teary Mark',''],
+    ['Upbeat Mark',''],['Peeved Mark',''],['Intellectual Mark',''],['Ferocious Mark',''],
+    ['Crafty Mark',''],['Scowling Mark',''],['Kindly Mark',''],['Flustered Mark',''],
+    ['Pumped-Up Mark',''],['Zero Energy Mark',''],['Prideful Mark',''],['Unsure Mark',''],
+    ['Humble Mark',''],['Thorny Mark',''],['Vigor Mark',''],['Slump Mark','']
+  ]}
+];
