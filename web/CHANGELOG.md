@@ -4,6 +4,13 @@ The version shown at the bottom of every page matches the newest entry here.
 Bump it with every set of changes you upload: the second number for fixes and
 small additions, the first for big new sections.
 
+## v2.76 · 16 Nov 2026
+
+- **Android app: fixed the missing styling.** Android quietly leaves out
+  folders whose names start with "_" when it packs an app, which dropped the
+  Pokédex's style sheet (web/_ds). The build now keeps them, so the phone app
+  looks the same as on the PC.
+
 ## v2.75 · 15 Nov 2026
 
 - **Android app.** The Pokédex now also builds as an Android app (APK) that

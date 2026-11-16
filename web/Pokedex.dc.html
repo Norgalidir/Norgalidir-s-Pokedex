@@ -3249,8 +3249,8 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 
   <div style="display:flex;justify-content:flex-start;gap:var(--space-3);align-items:baseline;padding:var(--space-8) var(--space-8) var(--space-6);font-size:11px;letter-spacing:.04em;color:var(--color-neutral-500);font-variant-numeric:tabular-nums">
     <span>Personal Pokédex⁠​‌​​​‌‌‌​‌​​‌​‌‌⁠</span>
-    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.75</span>
-    <span>· 15 Nov 2026</span>
+    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.76</span>
+    <span>· 16 Nov 2026</span>
   </div>
 
   </div>
@@ -3374,7 +3374,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 // Pokédex data and the sprite file settings, and asks for the owner's name.
 const FRIENDS = !!window.pokedexFriends;
 // Bump with every release (also the footer badge and the changelog).
-const APP_VERSION = '2.75';
+const APP_VERSION = '2.76';
 
 class Component extends DCLogic {
   constructor(p){
@@ -7463,7 +7463,7 @@ class Component extends DCLogic {
       openSettingsFromInfo: () => this.setState({infoOpen:false, settings:true}),
       statsOpen: !!st.statsOpen, infoOpen: !!st.infoOpen,
       statsOpenStr: st.statsOpen ? 'true' : 'false', infoOpenStr: st.infoOpen ? 'true' : 'false',
-      appVersion: 'Version ' + APP_VERSION + ' · 15 Nov 2026',
+      appVersion: 'Version ' + APP_VERSION + ' · 16 Nov 2026',
       musicCls: 'btn ' + ((window.pkSound && window.pkSound.musicOn()) ? 'btn-primary' : 'btn-ghost'),
       musicLabel: 'Music: ' + ((window.pkSound && window.pkSound.musicOn()) ? 'on' : 'off'),
       musicVol: window.pkSound && window.pkSound.musicVolume ? window.pkSound.musicVolume() : 70,

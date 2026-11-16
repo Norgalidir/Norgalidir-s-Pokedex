@@ -3,4 +3,4 @@
 New versions of the Pokédex app, fetched by the app itself. Nothing to do here by hand:
 publish with "Publish Update.bat".
 
-Current version: 2.75.0
+Current version: 2.76.0

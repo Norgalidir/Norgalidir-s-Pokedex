@@ -58,6 +58,12 @@ android {
         }
     }
 
+    // Android normally skips asset folders whose names start with "_", which
+    // dropped the page's styles (web/_ds/…). Keep everything except junk files.
+    androidResources {
+        ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:!CVS:!thumbs.db:!picasa.ini:!*~'
+    }
+
     // The Pokédex pages are copied here by the build (build-assets/web).
     sourceSets {
         main { assets.srcDirs = ['../build-assets'] }
