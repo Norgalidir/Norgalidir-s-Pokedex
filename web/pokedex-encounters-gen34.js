@@ -759,6 +759,12 @@ Johto Safari Zone Wetland|gh|good-rod|60:22-24:70:gh:,61:23-25:30:gh:,341:26:10:
 Johto Safari Zone Wetland|gh|super-rod|60:35-37:50:gh:,61:35-37:50:gh:,130:45:10:gh:Morning / 6+ water blocks placed,130:44:10:gh:Day / 6+ water blocks placed,130:45:10:gh:Night / 6+ water blocks placed,130:48:10:gh:Morning / 9+ water blocks placed,130:47:10:gh:Day / 9+ water blocks placed,130:48:10:gh:Night / 9+ water blocks placed
 `,
   sinnoh: `
+Eterna Forest|t|walk|198:11-12:10:t:Night,200:11-12:10:t:Night
+Route 218|t|walk|431:28-30:20:t:
+Route 221|t|walk|431:28-30:20:t:,434:28-30:20:t:
+Route 222|t|walk|431:39-41:20:t:
+Route 206|t|walk|434:16-17:20:t:
+Route 214|t|walk|434:34-36:20:t:
 Rock Peak Ruins|t|static|377:30::t:Regirock — with Regigigas in your party
 Iceberg Ruins|t|static|378:30::t:Regice — with Regigigas in your party
 Iron Ruins|t|static|379:30::t:Registeel — with Regigigas in your party

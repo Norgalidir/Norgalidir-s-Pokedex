@@ -36,7 +36,8 @@ window.LUX_EXEMPT_FORMS = [
   '172:spiky-eared', '493:legend-plate', '646:black', '646:white',
   '800:dusk-mane', '800:dawn-wings', '800:ultra', '890:eternamax',
   '892:gigantamax', '898:ice-rider', '898:shadow-rider', '1017:teal-mask',
-  '1017:wellspring-mask', '1017:hearthflame-mask', '1017:cornerstone-mask'
+  '1017:wellspring-mask', '1017:hearthflame-mask', '1017:cornerstone-mask',
+  '670:eternal-flower'
 ];
 
 // The same exemptions grouped by reason, for the Guides section.

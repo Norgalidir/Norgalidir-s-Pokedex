@@ -1,0 +1,70 @@
+plugins {
+    id 'com.android.application'
+}
+
+// The version comes from the published update (manifest.json), passed in by
+// the build as APP_VERSION, e.g. "2.75.0" -> versionCode 27500.
+def appVersion = System.getenv('APP_VERSION') ?: '0.0.1'
+def parts = appVersion.tokenize('.').collect { it.isInteger() ? it.toInteger() : 0 } + [0, 0, 0]
+def code = parts[0] * 10000 + parts[1] * 100 + parts[2]
+def repo = System.getenv('GITHUB_REPOSITORY') ?: 'Norgalidir/Norgalidir-s-Pokedex'
+
+android {
+    namespace 'com.georgekirby.pokedex'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.georgekirby.pokedex'
+        minSdk 24
+        targetSdk 34
+        versionCode Math.max(code, 1)
+        versionName appVersion
+        buildConfigField 'String', 'REPO', "\"${repo}\""
+    }
+
+    buildFeatures { buildConfig true }
+
+    flavorDimensions 'edition'
+    productFlavors {
+        professor {
+            dimension 'edition'
+            resValue 'string', 'app_name', 'Pokédex'
+            buildConfigField 'boolean', 'FRIENDS', 'false'
+        }
+        friends {
+            dimension 'edition'
+            applicationIdSuffix '.friends'
+            resValue 'string', 'app_name', 'Pokédex (Friends)'
+            buildConfigField 'boolean', 'FRIENDS', 'true'
+        }
+    }
+
+    signingConfigs {
+        release {
+            def ks = System.getenv('KEYSTORE_PATH')
+            if (ks) {
+                storeFile file(ks)
+                storePassword System.getenv('KEYSTORE_PASSWORD')
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // The Pokédex pages are copied here by the build (build-assets/web).
+    sourceSets {
+        main { assets.srcDirs = ['../build-assets'] }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}

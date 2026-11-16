@@ -37,3 +37,8 @@ window.SHINY_LOCKED = [
   1020, 1021, 1022, 1023, // Paradox (Indigo Disk)
   1024 // Terapagos
 ];
+
+// Single forms with no legal shiny, as "num:Form" (the rest of the species can be shiny).
+window.SHINY_LOCKED_FORMS = [
+  '670:Eternal Flower' // AZ's Floette, a fixed gift in Legends: Z-A
+];

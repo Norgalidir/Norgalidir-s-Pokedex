@@ -41,5 +41,17 @@ window.HOF_GENS = [
   {gen:'IX', label:'Generation IX', games:[
     {id:'sv', name:'Scarlet · Violet', region:'Paldea', badges:['Bug','Grass','Electric','Water','Normal','Ghost','Psychic','Ice']},
     {id:'za', name:'Legends: Z-A', region:'Lumiose', badges:[], note:'No badges — Z-A Royale ranks'}
+  ]},
+  // Fan games (ROM hacks). They have their own honours and don't count
+  // towards the official region Champion badges. You can add others in the
+  // Hall of Fame; those are kept in your save.
+  {gen:'Fan', label:'Fan games', fan:true, games:[
+    {id:'ek', name:'Emerald Kaizo', region:'Hoenn', fan:true, kaizo:true, badges:['Stone','Knuckle','Dynamo','Heat','Balance','Feather','Mind','Rain'], note:'Emerald hack · very hard'},
+    {id:'rr', name:'Radical Red', region:'Kanto', fan:true, badges:['Boulder','Cascade','Thunder','Rainbow','Soul','Marsh','Volcano','Earth'], note:'FireRed hack'},
+    {id:'ie', name:'Inclement Emerald', region:'Hoenn', fan:true, badges:['Stone','Knuckle','Dynamo','Heat','Balance','Feather','Mind','Rain'], note:'Emerald hack'},
+    {id:'rnb', name:'Run & Bun', region:'Hoenn', fan:true, badges:['Stone','Knuckle','Dynamo','Heat','Balance','Feather','Mind','Rain'], note:'Emerald hack · Nuzlocke-focused'},
+    {id:'cc', name:'Crystal Clear', region:'Johto · Kanto', fan:true, badges:['Zephyr','Hive','Plain','Fog','Storm','Mineral','Glacier','Rising','Boulder','Cascade','Thunder','Rainbow','Soul','Marsh','Volcano','Earth'], note:'Open-world Crystal hack · 16 badges'}
   ]}
 ];
+// The built-in fan games, kept so ones you add can be put back alongside them.
+window.HOF_FAN_BUILTIN = window.HOF_GENS[window.HOF_GENS.length - 1].games.slice();

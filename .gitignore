@@ -1,0 +1,5 @@
+android/build-assets/
+android/.gradle/
+android/app/build/
+android/build/
+*.jks

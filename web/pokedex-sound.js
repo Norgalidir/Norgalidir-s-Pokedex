@@ -193,8 +193,59 @@
     ['D',  [79,'-',78,'-',74,'-',78,'-']],
     ['G',  [79,'-','-','-',0,0,0,0]]
   ];
-  var ALL = [];
-  BARS.forEach(function(b){ ALL = ALL.concat(b[1]); });
+  // ---- Seasonal songs ---------------------------------------------------------
+  // December: "Deck the Halls" (a traditional Welsh carol, long out of
+  // copyright), arranged for the same band in G, a little brighter, with
+  // sleigh bells. Halloween: the everyday theme moved into G minor, slower,
+  // with more reverb and a minor-key band.
+  var CH_WINTER = {
+    G: CH.G, C: CH.C, D: CH.D, Em: CH.Em, Am: CH.Am,
+    A: {v:[45,52,57,61], b:45}
+  };
+  var BARS_WINTER = [
+    ['G',  [74,'-','-',72,71,'-',69,'-']],
+    ['G',  [67,'-',69,'-',71,'-',67,'-']],
+    ['D',  [69,'-',71,'-',72,'-',69,'-']],
+    ['G',  [71,'-','-',69,67,'-',66,'-']],
+    ['G',  [67,'-','-','-',0,0,0,0]],
+    ['G',  [74,'-','-',72,71,'-',69,'-']],
+    ['G',  [67,'-',69,'-',71,'-',67,'-']],
+    ['D',  [69,'-',71,'-',72,'-',69,'-']],
+    ['G',  [71,'-','-',69,67,'-',66,'-']],
+    ['G',  [67,'-','-','-',0,0,0,0]],
+    ['D',  [69,'-','-',71,72,'-',69,'-']],
+    ['Em', [71,'-','-',72,74,'-',69,'-']],
+    ['A',  [71,'-',73,'-',74,'-',76,'-']],
+    ['D',  [78,'-',79,'-',78,'-',76,'-']],
+    ['D',  [74,'-','-','-',0,0,0,0]],
+    ['G',  [74,'-','-',72,71,'-',69,'-']],
+    ['G',  [67,'-',69,'-',71,'-',67,'-']],
+    ['C',  [76,76,76,76,74,'-','-',72]],
+    ['D',  [71,'-',69,'-',67,'-','-','-']],
+    ['G',  [0,0,0,0,0,0,0,0]]
+  ];
+  var CH_SPOOKY = {
+    G:  {v:[55,58,62,65], b:43}, Em: {v:[51,55,58,62], b:39}, C: {v:[48,55,58,63], b:48},
+    D:  {v:[50,54,57,60], b:50}, Bm: {v:[46,53,58,62], b:46}, Am: {v:[45,51,55,60], b:45}
+  };
+  // Lower the 3rd, 6th and 7th of G major to make G minor.
+  var BARS_SPOOKY = BARS.map(function(b){ return [b[0], b[1].map(function(n){
+    if(typeof n !== 'number' || !n) return n; var pc = ((n - 67) % 12 + 12) % 12;
+    return pc === 4 || pc === 9 || pc === 11 ? n - 1 : n; })]; });
+  var SONGS = {
+    normal:  {ch: CH, bars: BARS, bpm: 88, wet: 0.32, bells: false},
+    winter:  {ch: CH_WINTER, bars: BARS_WINTER, bpm: 104, wet: 0.30, bells: true},
+    spooky:  {ch: CH_SPOOKY, bars: BARS_SPOOKY, bpm: 72, wet: 0.5, bells: false}
+  };
+  var SONG = SONGS.normal, ALL = [];
+  function pickSong(){
+    var sea = window.pkScreen && window.pkScreen.season ? window.pkScreen.season() : null;
+    SONG = sea && sea.id === 'winter' ? SONGS.winter : sea && sea.id === 'halloween' ? SONGS.spooky : SONGS.normal;
+    STEP = 60 / SONG.bpm / 2; ALL = [];
+    SONG.bars.forEach(function(b){ ALL = ALL.concat(b[1]); });
+    if(wet) wet.gain.value = SONG.wet;
+  }
+  pickSong();
   function holdLen(bar, i){
     var n = 1, k = bar * 8 + i + 1;
     while(ALL[k % ALL.length] === '-'){ n++; k++; }
@@ -264,7 +315,7 @@
 
   var playing = false, timer = null, nextT = 0, pos = 0;
   function scheduleStep(t){
-    var bar = Math.floor(pos / 8) % BARS.length, i = pos % 8, b = BARS[bar], ch = CH[b[0]];
+    var bar = Math.floor(pos / 8) % SONG.bars.length, i = pos % 8, b = SONG.bars[bar], ch = SONG.ch[b[0]];
     // Swing the off-beats a touch for a relaxed feel.
     var at = t + (i % 2 ? STEP * 0.12 : 0);
     var m = b[1][i];
@@ -282,6 +333,8 @@
     if(i === 0 || i === 4) kick(at, 0.32);
     if(i % 2 === 1) brush(at, 0.08, 0.05);
     if(i === 6) brush(at, 0.06, 0.18);
+    // Sleigh bells in winter: a bright shake on every off-beat.
+    if(SONG.bells && i % 2 === 1){ noise(wet || musicBus, at, 0.09, 'highpass', 8200, 0, 0.6, 0.10); tone(wet || musicBus, N(100 + (i % 4)), at, 0.06, 'triangle', 0.025); }
     pos++;
   }
   function tick(){
@@ -289,7 +342,7 @@
   }
   function startMusic(){
     if(!musicOn() || playing || !C || C.state !== 'running') return;
-    room();
+    room(); pickSong();
     playing = true; pos = 0; nextT = C.currentTime + 0.1;
     musicBus.gain.cancelScheduledValues(C.currentTime);
     musicBus.gain.setValueAtTime(0.0001, C.currentTime);

@@ -10,8 +10,10 @@
 // The sheet deliberately omits item-held transformations that revert when the
 // item is taken away, so these are NOT counted: Origin Dialga, Palkia and
 // Giratina, Black and White Kyurem, Necrozma's fusions, Crowned Zacian and
-// Zamazenta, the Calyrex Riders, the Ogerpon masks, Floette's Eternal Flower
-// and Spiky-eared Pichu. Mega, Primal and Gigantamax are tracked separately.
+// Zamazenta, the Calyrex Riders, the Ogerpon masks and Spiky-eared Pichu.
+// Mega, Primal and Gigantamax are tracked separately.
+// Floette's Eternal Flower (AZ's Floette) IS a storable form: it became
+// obtainable in Legends: Z-A as a postgame gift, and HOME keeps it.
 window.FORMS = Object.assign(window.FORMS || {}, {
   "396": ["Normal","Female"],
   "397": ["Normal","Female"],
@@ -72,7 +74,7 @@ window.FORMS = Object.assign(window.FORMS || {}, {
   "666": ["Normal","Polar","Tundra","Continental","Garden","Elegant","Meadow","Modern","Marine","Archipelago","High Plains","Sandstorm","River","Monsoon","Savanna","Sun","Ocean","Jungle","Fancy","Poke Ball"],
   "668": ["Normal","Female"],
   "669": ["Normal","Yellow","Orange","Blue","White"],
-  "670": ["Normal","Yellow","Orange","Blue","White"],
+  "670": ["Normal","Yellow","Orange","Blue","White","Eternal Flower"],
   "671": ["Normal","Yellow","Orange","Blue","White"],
   "676": ["Normal","Heart","Star","Diamond","Debutante","Matron","Dandy","La Reine","Kabuki","Pharaoh"],
   "678": ["Normal","Female"],

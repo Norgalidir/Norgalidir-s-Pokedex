@@ -8,6 +8,7 @@
 // list the star range instead of a rate.
 window.ENCOUNTERS_MORE = Object.assign(window.ENCOUNTERS_MORE || {}, {
   kalos: `
+Ambrette Town|xy|gift|142:20::xy:Revived from the Old Amber (found in Glittering Cave) at the Fossil Lab
 Ambrette Town|xy|good-rod|116:25:35:xy:,690:25:65:y:,692:25:65:x:
 Ambrette Town|xy|old-rod|370:15:100:xy:
 Ambrette Town|xy|rock-smash|557:18-20:66:x:,557:13-15:66:y:,688:18-20:34:x:,688:13-15:34:y:
@@ -367,6 +368,26 @@ Victory Road|ao|horde|41:20:100:ao:,294:20:10:ao:,304:20:70:ao:
   // nothing for that place and method. DexNav-only and horde slots that
   // PokéAPI lacks are still missing.
   orasx: `
+Route 102|ao|grass|283:4-5:1:oa:Rare
+Route 111|ao|grass|283:20-22:1:oa:Rare
+Route 114|ao|grass|283:16-18:1:oa:Rare
+Route 117|ao|grass|283:13-15:1:oa:Rare
+Route 120|ao|grass|283:25-27:1:oa:Rare
+Route 110|ao|grass|316:12-13:10:oa:
+Fiery Path|ao|walk|324:14-16:10:oa:
+Route 111|ao|good-rod|339:10-30:40:oa:
+Route 114|ao|good-rod|339:10-30:40:oa:
+Route 120|ao|good-rod|339:10-30:40:oa:
+Meteor Falls|ao|good-rod|339:10-30:40:oa:
+Route 102|ao|good-rod|341:10-30:20:oa:
+Route 117|ao|good-rod|341:10-30:20:oa:
+Petalburg City|ao|good-rod|341:10-30:20:oa:
+Route 115|ao|grass|39:23-25:10:oa:
+Lilycove City|ao|super-rod|120:25-30:20:oa:
+Mt. Pyre|ao|walk|358:27-29:5:oa:Summit
+Route 124|ao|special|366:20-35::oa:Underwater (Dive),170:20-30::oa:Underwater (Dive),369:30-35::oa:Underwater (Dive)
+Route 126|ao|special|366:20-35::oa:Underwater (Dive),170:20-30::oa:Underwater (Dive),369:30-35::oa:Underwater (Dive)
+Route 128|ao|super-rod|222:30-35:20:oa:
 Route 101|ao|grass|261:2-3:45:oa:,263:2-3:45:oa:,265:2-3:10:oa:
 Route 102|ao|grass|261:3-4:20:oa:,263:3-4:30:oa:,265:3-4:20:oa:,270:3-4:20:o:,273:3-4:20:a:,280:4-4:10:oa:
 Route 102|ao|old-rod|129:5-5:70:oa:,72:5-10:30:oa:

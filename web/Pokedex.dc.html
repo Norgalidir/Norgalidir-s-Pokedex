@@ -15,6 +15,8 @@
 <script src="pokedex-intro.js"></script>
 <script src="pokedex-honours.js"></script>
 <script src="pokedex-quiz.js"></script>
+<script src="pokedex-dexnum.js"></script>
+<script src="pokedex-extras.js"></script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon-192.png">
@@ -84,13 +86,31 @@ body{margin:0}
 .pk-hon-slot{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px 8px;border-radius:12px;border:1px solid transparent;background:none;font:inherit;color:inherit;cursor:default;text-align:center}
 .pk-hon-slot.got{cursor:pointer}
 .pk-hon-slot.got:hover,.pk-hon-slot.got:focus-visible{border-color:var(--color-neutral-800);background:color-mix(in srgb,var(--color-accent) 8%,transparent)}
-.pk-hon-slot img{width:72px;height:72px;display:block;transition:transform .15s ease}
-.pk-hon-slot.got:hover img{transform:translateY(-2px) scale(1.04)}
-.pk-hon-slot.locked img{filter:grayscale(1) brightness(.32) contrast(.9);opacity:.75}
+.pk-hon-slot .b3d{transition:transform .15s ease}
+.pk-hon-slot.got:hover .b3d{transform:translateY(-3px)}
+.pk-hon-slot.locked .b3d{filter:grayscale(1) brightness(.32) contrast(.9);opacity:.75}
+.pk-hon-slot.locked .b3d img:not(.f){display:none}
+/* 3D badges: the art stacked into a solid medal with a darker edge and back,
+   turned a little and following the pointer (the tile's --tx/--ty). */
+.b3d{display:inline-block;position:relative;width:var(--s,72px);height:var(--s,72px);perspective:420px;flex:none}
+.b3d-in{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(calc(6deg - var(--tx,0deg) * 2.4)) rotateY(calc(-14deg + var(--ty,0deg) * 3.4));transition:transform .25s ease-out}
+.b3d img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.b3d .f{transform:translateZ(.6px)}
+.b3d .e1{transform:translateZ(-.6px);filter:brightness(.55)}.b3d .e2{transform:translateZ(-1.6px);filter:brightness(.45)}
+.b3d .e3{transform:translateZ(-2.6px);filter:brightness(.4)}.b3d .e4{transform:translateZ(-3.6px);filter:brightness(.36)}
+.b3d .e5{transform:translateZ(-4.6px);filter:brightness(.32)}
+.b3d .bk{transform:translateZ(-5.4px) rotateY(180deg);filter:brightness(.5) saturate(.8)}
+.b3d.b3d-flat .e1,.b3d.b3d-flat .e2,.b3d.b3d-flat .e3,.b3d.b3d-flat .e4,.b3d.b3d-flat .e5,.b3d.b3d-flat .bk{display:none}
+.b3d.b3d-sway .b3d-in{animation:pkSway 5s ease-in-out infinite}
+@keyframes pkSway{0%,100%{transform:rotateX(6deg) rotateY(-22deg)}50%{transform:rotateX(2deg) rotateY(22deg)}}
+.b3d::after{content:"";position:absolute;left:12%;right:12%;bottom:-6%;height:10%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.45),transparent);pointer-events:none}
+@media (prefers-reduced-motion:reduce){.b3d-in{animation:none !important;transition:none}}
+html[data-depth=flat] .b3d-in{transform:none !important;animation:none !important}
+html[data-depth=flat] .b3d img:not(.f){display:none}
 .pk-hon-slot .hn{font-size:12px;line-height:1.25}
 .pk-hon-slot.locked .hn{color:var(--color-neutral-500)}
 .pk-hon-slot .hs{position:absolute;top:6px;right:8px;font-size:13px;color:var(--color-accent-300)}
-.pk-hon-slot.trophy img{width:88px;height:88px}
+.pk-hon-slot.trophy .b3d{--s:88px !important}
 .pk-info.end .pk-tip{left:auto;right:-6px;transform:translateX(var(--tip-shift, 0px))}
 kbd{font:600 11px/1 var(--font-body);padding:4px 7px;border-radius:6px;border:1px solid var(--color-divider);background:var(--color-neutral-900);color:var(--color-text);white-space:nowrap;justify-self:start}
 /* a card that folds away (details/summary) */
@@ -219,6 +239,20 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
         <div class="row"><span class="lbl">Page changes</span>
           <button class="{{ transCls }}" onClick="{{ onTrans }}" style="font-size:13px">{{ transLabel }}</button>
         </div>
+        <div class="row"><span class="lbl">Depth</span>
+          <button class="{{ depthCls }}" onClick="{{ onDepth }}" style="font-size:13px">{{ depthLabel }}</button>
+        </div>
+        <div class="row"><span class="lbl">Seasons</span>
+          <select class="input" value="{{ seasonVal }}" onChange="{{ onSeason }}" aria-label="Seasonal looks" style="width:auto;min-width:150px;font-size:13px;padding:var(--space-1) var(--space-3)">
+            <option value="auto">By the calendar</option>
+            <option value="off">Off</option>
+            <option value="halloween">Halloween (preview)</option>
+            <option value="winter">Winter (preview)</option>
+            <option value="newyear">New Year (preview)</option>
+            <option value="anniversary">Anniversary (preview)</option>
+          </select>
+          <span class="pk-info"><button type="button" class="pk-i" aria-label="About seasons"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></button><span class="pk-tip" role="tooltip">Around Halloween (24 Oct – 1 Nov), all of December, New Year and the 27 February anniversary, the app dresses up: a seasonal strip, a few drifting leaves, snow or sparks, an emblem on the intro device, decorations (snow, lights and baubles in winter; cobwebs, bats and a pumpkin at Halloween), and seasonal music. Pick one to preview it. Your own art can replace pieces: put PNGs in the images/season folder named like halloween-bat.png, halloween-spider.png, halloween-pumpkin.png, winter-holly.png, winter-bauble.png, winter-snowman.png or anniversary-cake.png.</span></span>
+        </div>
         <div class="row"><span class="lbl">Opening</span>
           <select class="input" value="{{ introStyleVal }}" onChange="{{ onIntroStyle }}" aria-label="Opening animation" style="width:auto;min-width:150px;font-size:13px;padding:var(--space-1) var(--space-3)">
             <option value="random">Mix them up</option>
@@ -252,6 +286,18 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
         </div>
         <div style="font-size:12px;color:var(--color-neutral-400);margin-top:var(--space-2)">{{ lastBackupLabel }}</div>
       </details>
+
+      <sc-if value="{{ isPhone }}">
+      <details open="{{ true }}">
+        <summary>Phone app</summary>
+        <div style="font-size:12px;color:var(--color-neutral-400)">{{ phoneInfo }}</div>
+        <div class="row" style="margin-top:var(--space-2)">
+          <button class="btn btn-secondary" onClick="{{ onPhoneSprites }}" style="font-size:13px">Import sprites zip</button>
+          <button class="btn btn-ghost" onClick="{{ onPhoneUpdate }}" style="font-size:13px">Check for a new version</button>
+        </div>
+        <div style="font-size:12px;color:var(--color-neutral-500);margin-top:var(--space-2)">Your progress is kept inside this app. To move it between the PC and the phone, use Export backup on one and Import backup on the other.</div>
+      </details>
+      </sc-if>
 
       <sc-if value="{{ friendsEdition }}">
       <details open="{{ true }}">
@@ -290,6 +336,11 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
             <div style="display:grid;grid-template-columns:72px 1fr;gap:var(--space-3);align-items:center;padding:var(--space-3);border-radius:10px;border:1px solid var(--color-neutral-800)">
               <img src="{{ evPreview }}" alt="Preview" style="width:72px;height:72px">
               <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+                <div style="display:flex;gap:var(--space-1);flex-wrap:wrap">
+                  <sc-for list="{{ evPresets }}" as="p" hint-placeholder-count="4">
+                    <button type="button" class="btn btn-ghost" data-p="{{ p.id }}" onClick="{{ onEvPreset }}" style="font-size:12px">{{ p.label }}</button>
+                  </sc-for>
+                </div>
                 <input class="input" data-ev="n" value="{{ ev.n }}" onInput="{{ onEvField }}" maxlength="40" placeholder="Badge name, e.g. Spooky Hunter" aria-label="Badge name" style="font-size:13px;padding:var(--space-1) var(--space-3)">
                 <input class="input" data-ev="e" value="{{ ev.e }}" onInput="{{ onEvField }}" maxlength="40" placeholder="Event, e.g. Halloween 2026" aria-label="Event name" style="font-size:13px;padding:var(--space-1) var(--space-3)">
                 <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center">
@@ -563,7 +614,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
         <sc-if value="{{ hasMenuHon }}">
           <button type="button" data-v="trainer" onClick="{{ onView }}" title="Your honours" style="display:flex;gap:6px;align-items:flex-end;margin-left:auto;margin-bottom:6px;background:none;border:0;padding:0;cursor:pointer">
             <sc-for list="{{ menuHon }}" as="h" hint-placeholder-count="3">
-              <img src="{{ h.img }}" alt="{{ h.name }}" title="{{ h.name }}" style="width:clamp(30px, 8vw, 44px);height:clamp(30px, 8vw, 44px);filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))">
+              <span title="{{ h.name }}" data-tilt-free><span class="b3d b3d-sway {{ h.b3dCls }}" style="--s:clamp(30px, 8vw, 44px)"><span class="b3d-in"><img class="bk" src="{{ h.img }}" alt=""><img class="e5" src="{{ h.img }}" alt=""><img class="e4" src="{{ h.img }}" alt=""><img class="e3" src="{{ h.img }}" alt=""><img class="e2" src="{{ h.img }}" alt=""><img class="e1" src="{{ h.img }}" alt=""><img class="f" src="{{ h.img }}" alt=""></span></span></span>
             </sc-for>
           </button>
         </sc-if>
@@ -592,7 +643,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
               </sc-for>
             </div>
           </div>
-          <div id="pk-quizcard" style="display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-6);border-radius:var(--radius-lg);background:var(--color-neutral-900);border:1px solid var(--color-neutral-800)">
+          <div id="pk-quizcard" data-tilt style="display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-6);border-radius:var(--radius-lg);background:var(--color-neutral-900);border:1px solid var(--color-neutral-800)">
             <div style="display:flex;align-items:center;gap:var(--space-3)">
               <img src="{{ quiz.img }}" alt="" style="width:40px;height:40px;flex:none;filter:{{ quiz.imgFilter }}">
               <div style="flex:1;min-width:0">
@@ -607,6 +658,30 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
             <sc-if value="{{ quiz.canPlay }}">
               <button class="btn btn-primary" onClick="{{ onQuizStart }}" style="font-size:13px">Start today's quiz</button>
             </sc-if>
+            <sc-if value="{{ quiz.canShare }}">
+              <button class="btn btn-secondary" onClick="{{ onQuizShare }}" style="font-size:13px">Share today's score</button>
+            </sc-if>
+            <div style="border-top:1px solid var(--color-neutral-800);padding-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)">
+              <div>
+                <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-500)">Generation quizzes</div>
+                <div style="font-size:12px;color:var(--color-neutral-400);margin-top:2px">Ten questions, play any time · {{ genQuizNote }}</div>
+              </div>
+              <div id="pk-genq" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+                <sc-for list="{{ genQuiz }}" as="g" hint-placeholder-count="9">
+                  <button data-gen="{{ g.n }}" onClick="{{ onGenQuiz }}" title="{{ g.title }}" aria-label="{{ g.title }}" style="display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 4px;border-radius:var(--radius-md);border:1px solid var(--color-neutral-800);background:var(--color-neutral-950, var(--color-bg));color:var(--color-text);font-family:var(--font-body);cursor:pointer;{{ g.style }}" style-hover="border-color:var(--color-accent-500)">
+                    <span style="font-family:var(--font-heading);font-size:14px;line-height:1.1">Gen {{ g.roman }}</span>
+                    <span style="font-size:10px;color:var(--color-neutral-400)">{{ g.best }}</span>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--color-neutral-800);padding-top:var(--space-3);display:flex;flex-direction:column;gap:var(--space-2)">
+              <div>
+                <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-500)">Dex number trainer</div>
+                <div style="font-size:12px;color:var(--color-neutral-400);margin-top:2px">{{ dexNumNote }}</div>
+              </div>
+              <button class="btn btn-secondary" onClick="{{ onDexNum }}" style="font-size:13px">Learn dex numbers</button>
+            </div>
           </div>
           <button class="btn btn-ghost" data-v="trainer" onClick="{{ onView }}" onAuxClick="{{ onView }}" style="width:100%;font-size:12px;letter-spacing:.06em;text-transform:uppercase">Trainer Card</button>
         </div>
@@ -624,7 +699,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
               <sc-if value="{{ g.open }}">
                 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:var(--space-3);padding:0 var(--space-6) var(--space-6);animation:pkSlide .22s ease-out">
                   <sc-for list="{{ g.tiles }}" as="m" hint-placeholder-count="3">
-                    <button data-v="{{ m.id }}" onClick="{{ onView }}" onAuxClick="{{ onView }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);text-align:left;padding:var(--space-4);border-radius:var(--radius-md);border:1px solid var(--color-neutral-800);background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);cursor:pointer;min-height:118px" style-hover="border-color:var(--color-accent);background:var(--color-neutral-800)">
+                    <button data-tilt data-v="{{ m.id }}" onClick="{{ onView }}" onAuxClick="{{ onView }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-2);text-align:left;padding:var(--space-4);border-radius:var(--radius-md);border:1px solid var(--color-neutral-800);background:var(--color-bg);color:var(--color-text);font-family:var(--font-body);cursor:pointer;min-height:118px" style-hover="border-color:var(--color-accent);background:var(--color-neutral-800)">
                       <div style="font-family:var(--font-heading);font-size:17px">{{ m.label }}</div>
                       <div style="font-size:12px;color:var(--color-neutral-400);text-wrap:pretty;line-height:1.5;flex:1">{{ m.sub }}</div>
                       <div style="display:flex;align-items:baseline;gap:var(--space-2);width:100%">
@@ -793,6 +868,142 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
           <div style="font-size:12px;color:var(--color-neutral-500)">{{ run.luxMore }}</div>
         </div>
       </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isJournal }}">
+    <div data-m="wrap" style="max-width:900px;margin:0 auto;padding:var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap">
+        <h3 style="margin:0">Journal</h3>
+        <span style="font-size:13px;color:var(--color-neutral-400)">{{ jr.summary }}</span>
+      </div>
+      <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+        <sc-for list="{{ jr.filters }}" as="f" hint-placeholder-count="6">
+          <button class="{{ f.cls }}" data-f="{{ f.id }}" onClick="{{ onJrFilter }}" style="font-size:13px">{{ f.label }}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ jr.empty }}"><div style="font-size:14px;color:var(--color-neutral-400)">{{ jr.emptyText }}</div></sc-if>
+      <div style="display:flex;flex-direction:column;gap:var(--space-6);position:relative;padding-left:22px;border-left:2px solid var(--color-neutral-800)">
+        <sc-for list="{{ jr.days }}" as="d" hint-placeholder-count="4">
+          <div style="position:relative">
+            <span style="position:absolute;left:-30px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--color-accent);box-shadow:0 0 0 4px var(--color-bg),0 0 12px var(--color-accent)"></span>
+            <div style="font-family:var(--font-heading);font-size:17px;margin-bottom:var(--space-3)">{{ d.label }}</div>
+            <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+              <sc-for list="{{ d.items }}" as="it" hint-placeholder-count="3">
+                <div class="card" style="padding:var(--space-3) var(--space-4);display:flex;flex-direction:row;gap:var(--space-3);align-items:center">
+                  <img src="{{ it.img }}" alt="" style="width:40px;height:40px;object-fit:contain;flex:none">
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14px">{{ it.text }}</div>
+                    <sc-if value="{{ it.hasSub }}"><div style="font-size:12px;color:var(--color-neutral-400)">{{ it.sub }}</div></sc-if>
+                    <sc-if value="{{ it.hasMini }}">
+                      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+                        <sc-for list="{{ it.mini }}" as="m" hint-placeholder-count="8"><img src="{{ m.img }}" alt="{{ m.name }}" title="{{ m.name }}" style="width:30px;height:30px;object-fit:contain"></sc-for>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">{{ it.tag }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <sc-if value="{{ jr.more }}"><button class="btn btn-secondary" onClick="{{ onJrMore }}" style="align-self:center">Show earlier days</button></sc-if>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isChallenge }}">
+    <div data-m="wrap" style="max-width:1080px;margin:0 auto;padding:var(--space-8);display:flex;flex-direction:column;gap:var(--space-6)">
+      <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap">
+        <h3 style="margin:0">Challenge runs</h3>
+        <span class="pk-info"><button type="button" class="pk-i" aria-label="About challenge runs"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></button><span class="pk-tip" role="tooltip">Roll a random set of rules for a playthrough, then track it here. Brutal runs are always a Nuzlocke underneath. Beat one and show Professor Norgalidir for the Challenge Runner badge.</span></span>
+      </div>
+
+      <sc-if value="{{ ch.hasActive }}">
+        <div class="card" style="padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4);border:1px solid var(--color-accent-700)">
+          <div style="display:flex;align-items:center;gap:var(--space-4);flex-wrap:wrap">
+            <sc-if value="{{ ch.a.hasStarter }}"><img src="{{ ch.a.starterImg }}" alt="" style="width:64px;height:64px;object-fit:contain"></sc-if>
+            <div style="flex:1;min-width:200px">
+              <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-300)">Run in progress · {{ ch.a.levelLabel }}</div>
+              <div style="font-family:var(--font-heading);font-size:24px;margin-top:2px">{{ ch.a.gameName }}</div>
+              <div style="font-size:13px;color:var(--color-neutral-400)">{{ ch.a.sub }}</div>
+            </div>
+            <button class="btn btn-ghost" onClick="{{ onChCopy }}" style="font-size:13px">Copy rules</button>
+          </div>
+          <ol style="margin:0;padding-left:22px;display:flex;flex-direction:column;gap:var(--space-2)">
+            <sc-for list="{{ ch.a.rules }}" as="r" hint-placeholder-count="4">
+              <li><b style="font-weight:500">{{ r.text }}</b> <span style="color:var(--color-neutral-400);font-size:13px">— {{ r.detail }}</span></li>
+            </sc-for>
+          </ol>
+          <div>
+            <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);margin-bottom:var(--space-2)">Badges · {{ ch.a.badgeText }}</div>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+              <sc-for list="{{ ch.a.pips }}" as="b" hint-placeholder-count="8">
+                <button type="button" data-i="{{ b.i }}" onClick="{{ onChBadge }}" title="{{ b.title }}" aria-pressed="{{ b.pressed }}" style="width:34px;height:34px;border-radius:50%;border:2px solid var(--color-accent);background:{{ b.bg }};color:var(--color-text);font:inherit;font-size:12px;cursor:pointer">{{ b.n }}</button>
+              </sc-for>
+            </div>
+          </div>
+          <textarea class="input" rows="2" placeholder="Notes: who you lost, close calls, your team…" value="{{ ch.a.notes }}" onChange="{{ onChNotes }}" aria-label="Run notes" style="resize:vertical"></textarea>
+          <div style="display:flex;gap:var(--space-3);flex-wrap:wrap">
+            <button class="btn btn-primary" onClick="{{ onChWon }}">Beat it!</button>
+            <sc-if value="{{ ch.notAsk }}"><button class="btn btn-ghost" onClick="{{ onChQuitAsk }}">Give up</button></sc-if>
+            <sc-if value="{{ ch.ask }}">
+              <span style="font-size:13px;color:var(--color-neutral-400);align-self:center">Give up this run?</span>
+              <button class="btn btn-secondary" onClick="{{ onChQuit }}">Yes, give up</button>
+              <button class="btn btn-ghost" onClick="{{ onChQuitNo }}">Keep going</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ch.noActive }}">
+        <div class="card" style="padding:var(--space-6);display:flex;flex-direction:column;gap:var(--space-4)">
+          <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center">
+            <select class="input" value="{{ ch.game }}" onChange="{{ onChGame }}" aria-label="Game" style="width:auto;min-width:200px">
+              <sc-for list="{{ ch.games }}" as="g" hint-placeholder-count="6"><option value="{{ g.id }}">{{ g.name }}</option></sc-for>
+            </select>
+            <div style="display:flex;gap:var(--space-2)">
+              <sc-for list="{{ ch.levels }}" as="l" hint-placeholder-count="3">
+                <button class="{{ l.cls }}" data-l="{{ l.id }}" onClick="{{ onChLevel }}" style="font-size:13px">{{ l.label }}</button>
+              </sc-for>
+            </div>
+            <button class="btn btn-primary" onClick="{{ onChRoll }}">{{ ch.rollLabel }}</button>
+          </div>
+          <div style="font-size:13px;color:var(--color-neutral-400)">{{ ch.levelNote }}</div>
+          <sc-if value="{{ ch.hasDraft }}">
+            <div style="display:flex;flex-direction:column;gap:var(--space-3);padding-top:var(--space-4);border-top:1px solid var(--color-divider)">
+              <sc-if value="{{ ch.d.hasStarter }}">
+                <div style="display:flex;align-items:center;gap:var(--space-3)">
+                  <img src="{{ ch.d.starterImg }}" alt="" style="width:56px;height:56px;object-fit:contain">
+                  <div style="flex:1"><div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">Starter</div><div style="font-size:16px">{{ ch.d.starterName }}</div></div>
+                  <button class="btn btn-ghost" onClick="{{ onChStarter }}" title="Roll another starter" style="font-size:13px">↻</button>
+                </div>
+              </sc-if>
+              <sc-for list="{{ ch.d.rules }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;align-items:flex-start;gap:var(--space-3)">
+                  <div style="flex:1"><div style="font-size:15px">{{ r.text }}</div><div style="font-size:13px;color:var(--color-neutral-400)">{{ r.detail }}</div></div>
+                  <button class="btn btn-ghost" data-i="{{ r.i }}" onClick="{{ onChReroll }}" title="Swap this rule" style="font-size:13px">↻</button>
+                </div>
+              </sc-for>
+              <div style="display:flex;gap:var(--space-3)"><button class="btn btn-primary" onClick="{{ onChStart }}">Start this run</button></div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ch.hasHistory }}">
+        <div>
+          <h6 style="color:var(--color-neutral-400);margin:0 0 var(--space-3)">Past runs</h6>
+          <div style="display:flex;flex-direction:column;gap:var(--space-2)">
+            <sc-for list="{{ ch.history }}" as="h" hint-placeholder-count="3">
+              <div class="card" style="padding:var(--space-3) var(--space-4);display:flex;flex-direction:row;gap:var(--space-3);align-items:center;flex-wrap:wrap">
+                <span style="font-size:18px;width:24px;text-align:center">{{ h.icon }}</span>
+                <div style="flex:1;min-width:200px"><div>{{ h.title }}</div><div style="font-size:12px;color:var(--color-neutral-400)">{{ h.sub }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
     </div>
   </sc-if>
 
@@ -1178,13 +1389,16 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
           <h3 style="margin:0">Honours</h3>
           <span style="font-size:13px;color:var(--color-neutral-400)">{{ hon.count }}</span>
           <span class="pk-info"><button type="button" class="pk-i" aria-label="About honours"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></button><span class="pk-tip" role="tooltip">Badges and trophies of your own, separate from the gym badges below. Most are earned by your progress. The Professor ones come as a code from Professor Norgalidir. Click one you’ve earned to show it on your card and menu (up to three).</span></span>
+          <div style="flex:1"></div>
+          <button class="btn btn-secondary" onClick="{{ onCardSave }}" style="font-size:13px">Save card picture</button>
+          <button class="btn btn-ghost" onClick="{{ onCardCopy }}" style="font-size:13px">Copy picture</button>
         </div>
         <div style="display:flex;align-items:center;gap:var(--space-6);flex-wrap:wrap;padding:var(--space-4) var(--space-6);margin-bottom:var(--space-6);border-radius:var(--radius-lg);border:1px solid var(--color-neutral-800);background:linear-gradient(135deg,color-mix(in srgb,var(--color-accent) 10%,var(--color-neutral-900)),var(--color-neutral-900))">
           <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-500);min-width:90px">On show</div>
           <sc-if value="{{ hon.hasFeatured }}">
             <sc-for list="{{ hon.featured }}" as="f" hint-placeholder-count="3">
               <div style="display:flex;flex-direction:column;align-items:center;gap:4px;width:96px;text-align:center">
-                <img src="{{ f.img }}" alt="" style="width:76px;height:76px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.4))">
+                <span class="b3d b3d-sway {{ f.b3dCls }}" style="--s:76px"><span class="b3d-in"><img class="bk" src="{{ f.img }}" alt=""><img class="e5" src="{{ f.img }}" alt=""><img class="e4" src="{{ f.img }}" alt=""><img class="e3" src="{{ f.img }}" alt=""><img class="e2" src="{{ f.img }}" alt=""><img class="e1" src="{{ f.img }}" alt=""><img class="f" src="{{ f.img }}" alt=""></span></span>
                 <div style="font-size:12px">{{ f.name }}</div>
               </div>
             </sc-for>
@@ -1202,8 +1416,8 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
               </div>
               <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:var(--space-2)">
                 <sc-for list="{{ grp.items }}" as="h" hint-placeholder-count="6">
-                  <button type="button" class="{{ h.cls }}" data-hon="{{ h.id }}" onClick="{{ onHonPick }}" title="{{ h.title }}" aria-label="{{ h.title }}" aria-pressed="{{ h.pressed }}">
-                    <img src="{{ h.img }}" alt="">
+                  <button type="button" data-tilt class="{{ h.cls }}" data-hon="{{ h.id }}" onClick="{{ onHonPick }}" title="{{ h.title }}" aria-label="{{ h.title }}" aria-pressed="{{ h.pressed }}">
+                    <span class="b3d {{ h.b3dCls }}" style="--s:72px"><span class="b3d-in"><img class="bk" src="{{ h.img }}" alt=""><img class="e5" src="{{ h.img }}" alt=""><img class="e4" src="{{ h.img }}" alt=""><img class="e3" src="{{ h.img }}" alt=""><img class="e2" src="{{ h.img }}" alt=""><img class="e1" src="{{ h.img }}" alt=""><img class="f" src="{{ h.img }}" alt=""></span></span>
                     <span class="hn">{{ h.name }}</span>
                     <sc-if value="{{ h.star }}"><span class="hs" aria-hidden="true">★</span></sc-if>
                   </button>
@@ -1214,22 +1428,130 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
         </div>
       </div>
 
+      <div id="pk-hunts">
+        <div style="display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap">
+          <h3 style="margin:0">Shiny hunts</h3>
+          <span style="font-size:13px;color:var(--color-neutral-400)">{{ hunts.summary }}</span>
+        </div>
+        <sc-if value="{{ hunts.none }}"><div style="font-size:13px;color:var(--color-neutral-400)">No hunts yet. Open any Pokédex entry, start a count under Shiny hunt, then tap Hunt mode.</div></sc-if>
+        <sc-if value="{{ hunts.hasActive }}">
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);margin-bottom:var(--space-2)">Still hunting</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:var(--space-2);margin-bottom:var(--space-4)">
+            <sc-for list="{{ hunts.active }}" as="h" hint-placeholder-count="3">
+              <button type="button" data-k="{{ h.k }}" onClick="{{ onHuntResume }}" title="Carry on in hunt mode" class="card" style="padding:var(--space-3);display:flex;flex-direction:row;gap:var(--space-3);align-items:center;text-align:left;font:inherit;color:inherit;cursor:pointer;border:1px solid var(--color-neutral-800)">
+                <img src="{{ h.img }}" alt="" style="width:48px;height:48px;object-fit:contain;flex:none">
+                <span style="flex:1;min-width:0"><span style="display:block">{{ h.name }}</span><span style="display:block;font-size:12px;color:var(--color-neutral-400)">{{ h.sub }}</span></span>
+                <span style="font-size:12px;color:var(--color-accent-300)">Resume ›</span>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hunts.hasDone }}">
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500);margin-bottom:var(--space-2)">Found</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:var(--space-2)">
+            <sc-for list="{{ hunts.done }}" as="h" hint-placeholder-count="3">
+              <div class="card" style="padding:var(--space-3);display:flex;flex-direction:row;gap:var(--space-3);align-items:center">
+                <img src="{{ h.img }}" alt="" style="width:48px;height:48px;object-fit:contain;flex:none">
+                <div style="flex:1;min-width:0"><div>{{ h.name }}</div><div style="font-size:12px;color:var(--color-neutral-400)">{{ h.sub }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+
+      <div id="pk-compare">
+        <div style="display:flex;align-items:baseline;gap:var(--space-3);margin-bottom:var(--space-4);flex-wrap:wrap">
+          <h3 style="margin:0">Compare with a friend</h3>
+          <span class="pk-info"><button type="button" class="pk-i" aria-label="About comparing"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></button><span class="pk-tip" role="tooltip">Load a backup file a friend has exported (Settings → Backup → Export backup). It only reads it: nothing of yours changes. Handy for finding trades.</span></span>
+          <div style="flex:1"></div>
+          <button class="btn btn-secondary" onClick="{{ onCmpLoad }}" style="font-size:13px">{{ cmp.loadLabel }}</button>
+          <sc-if value="{{ cmp.has }}"><button class="btn btn-ghost" onClick="{{ onCmpClear }}" style="font-size:13px">Clear</button></sc-if>
+        </div>
+        <sc-if value="{{ cmp.has }}">
+          <div style="display:flex;flex-direction:column;gap:var(--space-4)">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:var(--space-3)">
+              <sc-for list="{{ cmp.rows }}" as="r" hint-placeholder-count="4">
+                <div class="card" style="padding:var(--space-4)">
+                  <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">{{ r.label }}</div>
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:var(--space-2);gap:var(--space-3)">
+                    <span><span style="font-size:11px;color:var(--color-neutral-500)">You </span><span style="font-family:var(--font-heading);font-size:22px;color:var(--color-accent-300)">{{ r.you }}</span></span>
+                    <span><span style="font-size:11px;color:var(--color-neutral-500)">{{ cmp.short }} </span><span style="font-family:var(--font-heading);font-size:22px">{{ r.them }}</span></span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+            <sc-if value="{{ cmp.hasHon }}">
+              <div style="display:flex;gap:var(--space-3);align-items:center;flex-wrap:wrap">
+                <span style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">{{ cmp.honLabel }}</span>
+                <sc-for list="{{ cmp.hon }}" as="h" hint-placeholder-count="4"><img src="{{ h.img }}" alt="{{ h.name }}" title="{{ h.name }}" style="width:40px;height:40px"></sc-for>
+              </div>
+            </sc-if>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+              <sc-for list="{{ cmp.tabs }}" as="t" hint-placeholder-count="4">
+                <button class="{{ t.cls }}" data-t="{{ t.id }}" onClick="{{ onCmpTab }}" style="font-size:13px">{{ t.label }}</button>
+              </sc-for>
+            </div>
+            <div style="font-size:13px;color:var(--color-neutral-400)">{{ cmp.listNote }}</div>
+            <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+              <sc-for list="{{ cmp.list }}" as="e" hint-placeholder-count="12">
+                <button type="button" data-n="{{ e.num }}" onClick="{{ onCmpOpen }}" style="font:inherit;font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--color-neutral-800);background:var(--color-neutral-900);color:inherit;cursor:pointer">{{ e.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
       <div>
         <div style="display:flex;align-items:baseline;gap:var(--space-4);margin-bottom:var(--space-4)">
           <h3 style="margin:0">OT address book</h3>
-          <button class="btn btn-ghost" onClick="{{ onOtAdd }}" style="font-size:12px">+ Add trainer</button>
+          <button class="btn btn-ghost" data-book="mine" onClick="{{ onOtAdd }}" style="font-size:12px">+ Add trainer</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:var(--space-3)">
           <sc-for list="{{ otBook }}" as="o" hint-placeholder-count="2">
             <div class="card" style="padding:var(--space-4);gap:var(--space-2)">
               <div style="display:flex;gap:var(--space-2)">
-                <input class="input" data-i="{{ o.i }}" data-key="name" value="{{ o.name }}" onChange="{{ onOtBookField }}" placeholder="OT name" style="flex:1;min-width:0;font-size:13px">
-                <input class="input" data-i="{{ o.i }}" data-key="tid" value="{{ o.tid }}" onChange="{{ onOtBookField }}" placeholder="TID" style="width:86px;flex:none;font-size:13px">
+                <input class="input" data-book="mine" data-i="{{ o.i }}" data-key="name" value="{{ o.name }}" onChange="{{ onOtBookField }}" placeholder="OT name" style="flex:1;min-width:0;font-size:13px">
+                <input class="input" data-book="mine" data-i="{{ o.i }}" data-key="tid" value="{{ o.tid }}" onChange="{{ onOtBookField }}" placeholder="TID" style="width:86px;flex:none;font-size:13px">
               </div>
-              <input class="input" data-i="{{ o.i }}" data-key="note" value="{{ o.note }}" onChange="{{ onOtBookField }}" placeholder="Game, console or note" style="width:100%;font-size:13px">
+              <select class="input" data-book="mine" data-i="{{ o.i }}" data-key="game" value="{{ o.game }}" onChange="{{ onOtBookField }}" aria-label="Game for this trainer" style="width:100%;font-size:13px">
+                <option value="">Game: not set</option>
+                <sc-for list="{{ metOpts }}" as="g" hint-placeholder-count="6">
+                  <option value="{{ g.id }}">{{ g.label }}</option>
+                </sc-for>
+              </select>
+              <input class="input" data-book="mine" data-i="{{ o.i }}" data-key="note" value="{{ o.note }}" onChange="{{ onOtBookField }}" placeholder="Note (console, save file …)" style="width:100%;font-size:13px">
               <div style="display:flex;align-items:center;justify-content:space-between">
                 <span style="font-size:11px;color:var(--color-neutral-500)">{{ o.countLabel }}</span>
-                <button class="btn btn-ghost" data-i="{{ o.i }}" onClick="{{ onOtRemove }}" style="font-size:11px">Remove</button>
+                <span style="display:flex;gap:var(--space-1)"><button class="btn btn-ghost" data-book="mine" data-i="{{ o.i }}" onClick="{{ onOtMove }}" title="Move to Gift &amp; event OTs" style="font-size:11px">Move to gifts</button><button class="btn btn-ghost" data-book="mine" data-i="{{ o.i }}" onClick="{{ onOtRemove }}" style="font-size:11px">Remove</button></span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;align-items:baseline;gap:var(--space-4);margin-bottom:var(--space-4)">
+          <h3 style="margin:0">Gift &amp; event OTs</h3>
+          <button class="btn btn-ghost" data-book="gift" onClick="{{ onOtAdd }}" style="font-size:12px">+ Add gift OT</button>
+          <span style="font-size:12px;color:var(--color-neutral-500)">Trainers on gifts and events (AZ, GF, HOME …), kept apart from your own</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:var(--space-3)">
+          <sc-for list="{{ otGifts }}" as="o" hint-placeholder-count="2">
+            <div class="card" style="padding:var(--space-4);gap:var(--space-2)">
+              <div style="display:flex;gap:var(--space-2)">
+                <input class="input" data-book="gift" data-i="{{ o.i }}" data-key="name" value="{{ o.name }}" onChange="{{ onOtBookField }}" placeholder="OT name" style="flex:1;min-width:0;font-size:13px">
+                <input class="input" data-book="gift" data-i="{{ o.i }}" data-key="tid" value="{{ o.tid }}" onChange="{{ onOtBookField }}" placeholder="TID" style="width:86px;flex:none;font-size:13px">
+              </div>
+              <select class="input" data-book="gift" data-i="{{ o.i }}" data-key="game" value="{{ o.game }}" onChange="{{ onOtBookField }}" aria-label="Game for this trainer" style="width:100%;font-size:13px">
+                <option value="">Game: not set</option>
+                <sc-for list="{{ metOpts }}" as="g" hint-placeholder-count="6">
+                  <option value="{{ g.id }}">{{ g.label }}</option>
+                </sc-for>
+              </select>
+              <input class="input" data-book="gift" data-i="{{ o.i }}" data-key="note" value="{{ o.note }}" onChange="{{ onOtBookField }}" placeholder="Note (event, how you got it …)" style="width:100%;font-size:13px">
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <span style="font-size:11px;color:var(--color-neutral-500)">{{ o.countLabel }}</span>
+                <span style="display:flex;gap:var(--space-1)"><button class="btn btn-ghost" data-book="gift" data-i="{{ o.i }}" onClick="{{ onOtMove }}" title="Move to OT address book" style="font-size:11px">Move to mine</button><button class="btn btn-ghost" data-book="gift" data-i="{{ o.i }}" onClick="{{ onOtRemove }}" style="font-size:11px">Remove</button></span>
               </div>
             </div>
           </sc-for>
@@ -1340,6 +1662,26 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
               </sc-if>
             </div>
           </sc-for>
+          <div class="card" style="padding:var(--space-4) var(--space-6);display:flex;flex-direction:column;gap:var(--space-3)">
+            <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap">
+              <div style="font-family:var(--font-heading);font-size:16px">Add a fan game</div>
+              <div style="font-size:12px;color:var(--color-neutral-400)">It appears under Fan games, with its own badge to earn.</div>
+            </div>
+            <form onSubmit="{{ onFanAdd }}" style="display:flex;gap:var(--space-2);flex-wrap:wrap;align-items:center">
+              <input class="input" name="fgname" placeholder="Name, e.g. Pokémon Unbound" aria-label="Fan game name" maxlength="40" style="flex:1 1 200px;font-size:13px">
+              <input class="input" name="region" placeholder="Region" aria-label="Region" maxlength="24" style="width:130px;font-size:13px">
+              <input class="input" name="badges" placeholder="Badges: a number, or names with commas" aria-label="Badges" maxlength="300" style="flex:2 1 260px;font-size:13px">
+              <button type="submit" class="btn btn-secondary" style="font-size:13px">Add</button>
+            </form>
+            <sc-if value="{{ hasFanCustom }}">
+              <div style="display:flex;gap:var(--space-2);flex-wrap:wrap">
+                <sc-for list="{{ fanCustom }}" as="f" hint-placeholder-count="2">
+                  <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 6px 4px 12px;border-radius:999px;border:1px solid var(--color-neutral-800)">{{ f.label }}
+                    <button type="button" data-id="{{ f.id }}" onClick="{{ onFanRemove }}" aria-label="Remove {{ f.name }}" title="Remove" style="border:0;background:none;color:var(--color-neutral-400);cursor:pointer;font:inherit;font-size:14px;line-height:1">×</button></span>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
         </div>
       </div>
 
@@ -1493,7 +1835,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
                 <label style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">Shiny caught in — {{ entry.formLabel }}</label>
                 <button data-which="shiny" onClick="{{ onBallOpen }}" style="{{ shinyBallBtnStyle }}">
                   <sc-if value="{{ shinyBallHasImg }}">
-                    <div style="width:22px;height:22px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ shinyBallImg }}')"></div>
+                    <div style="width:30px;height:30px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ shinyBallImg }}')"></div>
                   </sc-if>
                   <sc-if value="{{ shinyBallNoImg }}">
                     <div style="width:16px;height:16px;flex:none;border-radius:999px;background:{{ shinyBallDot }};box-shadow:inset 0 -5px 0 rgba(0,0,0,.28)"></div>
@@ -1506,7 +1848,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
                     <sc-for list="{{ shinyBallGrid }}" as="b" hint-placeholder-count="8">
                       <div data-which="shiny" data-ball="{{ b.name }}" onClick="{{ onBallPick }}" title="{{ b.name }}" style="{{ b.cellStyle }}">
                         <sc-if value="{{ b.hasImg }}">
-                          <div style="width:26px;height:26px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ b.img }}')"></div>
+                          <div style="width:34px;height:34px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ b.img }}')"></div>
                         </sc-if>
                         <sc-if value="{{ b.noImg }}">
                           <div style="width:18px;height:18px;border-radius:999px;background:{{ b.dot }};box-shadow:inset 0 -6px 0 rgba(0,0,0,.28)"></div>
@@ -1532,7 +1874,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
                 <label style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">Caught in — {{ entry.formLabel }}</label>
                 <button data-which="main" onClick="{{ onBallOpen }}" style="{{ mainBallBtnStyle }}">
                   <sc-if value="{{ mainBallHasImg }}">
-                    <div style="width:22px;height:22px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ mainBallImg }}')"></div>
+                    <div style="width:30px;height:30px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ mainBallImg }}')"></div>
                   </sc-if>
                   <sc-if value="{{ mainBallNoImg }}">
                     <div style="width:16px;height:16px;flex:none;border-radius:999px;background:{{ mainBallDot }};box-shadow:inset 0 -5px 0 rgba(0,0,0,.28)"></div>
@@ -1545,7 +1887,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
                     <sc-for list="{{ mainBallGrid }}" as="b" hint-placeholder-count="8">
                       <div data-which="main" data-ball="{{ b.name }}" onClick="{{ onBallPick }}" title="{{ b.name }}" style="{{ b.cellStyle }}">
                         <sc-if value="{{ b.hasImg }}">
-                          <div style="width:26px;height:26px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ b.img }}')"></div>
+                          <div style="width:34px;height:34px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ b.img }}')"></div>
                         </sc-if>
                         <sc-if value="{{ b.noImg }}">
                           <div style="width:18px;height:18px;border-radius:999px;background:{{ b.dot }};box-shadow:inset 0 -6px 0 rgba(0,0,0,.28)"></div>
@@ -1561,7 +1903,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
             <sc-if value="{{ showOtField }}">
               <div class="field">
                 <div style="display:flex;align-items:center;gap:var(--space-3);flex-wrap:wrap">
-                  <label style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">Original Trainer</label><span class="pk-info"><button type="button" class="pk-i" aria-label="About Original Trainer names"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></button><span class="pk-tip" role="tooltip">Names come from your OT address book on the Trainer Card, plus any known event OTs for this Pokémon.</span></span>
+                  <label style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-500)">Original Trainer</label><span class="pk-info"><button type="button" class="pk-i" aria-label="About Original Trainer names"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".6" fill="currentColor"/></svg></button><span class="pk-tip" role="tooltip">Names come from your OT address book and Gift &amp; event OTs on the Trainer Card, plus any known event OTs for this Pokémon.</span></span>
                   <div style="flex:1"></div>
                   <div style="display:flex;gap:var(--space-1)">
                     <sc-for list="{{ otSides }}" as="sd" hint-placeholder-count="2">
@@ -1587,6 +1929,9 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
                     </sc-for>
                   </select>
                 </div>
+                <sc-if value="{{ metHint }}">
+                  <div style="font-size:11px;color:var(--color-neutral-400);margin-top:var(--space-1)">{{ metHint }}</div>
+                </sc-if>
                 <sc-if value="{{ otEvent.has }}">
                   <div style="display:flex;gap:var(--space-2);align-items:baseline;flex-wrap:wrap;margin-top:var(--space-2)">
                     <span class="{{ otEvent.cls }}" style="font-size:11px">Event</span>
@@ -1601,6 +1946,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
               <sc-if value="{{ isEditing }}">
                 <button class="btn btn-primary" onClick="{{ toggleEdit }}" style="font-size:13px">Done editing</button>
               </sc-if>
+              <button class="btn btn-primary" onClick="{{ onWtfOpen }}" style="font-size:13px">Where to find</button>
               <details class="pk-menu">
                 <summary class="btn btn-secondary" style="font-size:13px">More ▾</summary>
                 <div class="pk-menu-list left">
@@ -1880,7 +2226,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
               <sc-if value="{{ r.hasMarks }}">
                 <div style="display:flex;gap:var(--space-2);align-items:center;margin-top:var(--space-1)">
                   <sc-for list="{{ r.marks }}" as="m" hint-placeholder-count="2">
-                    <div title="{{ m.title }}" style="width:15px;height:15px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ m.src }}')"></div>
+                    <div title="{{ m.title }}" style="width:20px;height:20px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ m.src }}')"></div>
                   </sc-for>
                 </div>
               </sc-if>
@@ -2637,7 +2983,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
                 <div title="Can’t be in a Luxury Ball — any ball counts" style="position:absolute;bottom:3px;right:4px;font-size:9px;line-height:1;color:var(--color-accent-300)">◇</div>
               </sc-if>
               <sc-if value="{{ p.hasBall }}">
-                <div style="position:absolute;top:3px;left:3px;width:14px;height:14px;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ p.ballImg }}')"></div>
+                <div title="{{ p.ballName }}" style="position:absolute;top:4px;left:4px;width:clamp(16px,17%,60px);aspect-ratio:1;background-repeat:no-repeat;background-position:center;background-size:contain;background-image:url('{{ p.ballImg }}');filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))"></div>
               </sc-if>
               <div data-m="slottext" style="font-size:9px;font-variant-numeric:tabular-nums;color:var(--color-neutral-600);line-height:1">{{ p.pad }}</div>
               <div data-m="slottext" style="font-size:10px;line-height:1.1;text-align:center;color:var(--color-neutral-300);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.name }}</div>
@@ -2903,11 +3249,64 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 
   <div style="display:flex;justify-content:flex-start;gap:var(--space-3);align-items:baseline;padding:var(--space-8) var(--space-8) var(--space-6);font-size:11px;letter-spacing:.04em;color:var(--color-neutral-500);font-variant-numeric:tabular-nums">
     <span>Personal Pokédex⁠​‌​​​‌‌‌​‌​​‌​‌‌⁠</span>
-    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.56</span>
-    <span>· 9 Nov 2026</span>
+    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.75</span>
+    <span>· 15 Nov 2026</span>
   </div>
 
   </div>
+
+  <sc-if value="{{ wtf.open }}">
+    <div onClick="{{ onWtfClose }}" style="position:fixed;inset:0;z-index:58;background:color-mix(in srgb,var(--color-bg) 70%,transparent);backdrop-filter:blur(3px)"></div>
+    <div id="pk-wtf" role="dialog" aria-modal="true" aria-label="Where to find {{ wtf.name }}" style="position:fixed;z-index:59;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,calc(100vw - 24px));max-height:calc(100vh - 40px);display:flex;flex-direction:column;border-radius:16px;background:var(--color-surface);box-shadow:var(--shadow-lg);overflow:hidden">
+      <div style="display:flex;align-items:center;gap:var(--space-4);padding:var(--space-4) var(--space-6);border-bottom:1px solid var(--color-divider)">
+        <img src="{{ wtf.img }}" alt="" style="width:56px;height:56px;object-fit:contain;flex:none">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-500)">Where to find</div>
+          <div style="font-family:var(--font-heading);font-size:22px">{{ wtf.name }}</div>
+        </div>
+        <button class="btn btn-ghost" onClick="{{ onWtfClose }}" aria-label="Close" style="font-size:18px">✕</button>
+      </div>
+      <div style="display:flex;gap:var(--space-3);flex-wrap:wrap;align-items:center;padding:var(--space-4) var(--space-6);border-bottom:1px solid var(--color-divider)">
+        <label style="display:flex;align-items:center;gap:var(--space-2);font-size:13px">In a
+          <select class="input" value="{{ wtf.ball }}" onChange="{{ onWtfBall }}" aria-label="Ball" style="width:auto;font-size:13px;padding:var(--space-1) var(--space-3)">
+            <sc-for list="{{ wtf.balls }}" as="b" hint-placeholder-count="8"><option value="{{ b.id }}">{{ b.label }}</option></sc-for>
+          </select>
+        </label>
+        <sc-if value="{{ wtf.canAlpha }}">
+          <button class="{{ wtf.alphaCls }}" onClick="{{ onWtfAlpha }}" style="font-size:13px">{{ wtf.alphaLabel }}</button>
+        </sc-if>
+        <sc-if value="{{ wtf.noAlpha }}"><span style="font-size:12px;color:var(--color-neutral-500)">Never appears as an Alpha</span></sc-if>
+        <div style="flex:1"></div>
+        <span style="font-size:13px;color:var(--color-neutral-400)">{{ wtf.summary }}</span>
+      </div>
+      <div style="overflow-y:auto;padding:var(--space-4) var(--space-6) var(--space-6);display:flex;flex-direction:column;gap:var(--space-4)">
+        <sc-if value="{{ wtf.hasTip }}"><div style="font-size:13px;color:var(--color-accent-300);text-wrap:pretty">{{ wtf.tip }}</div></sc-if>
+        <sc-for list="{{ wtf.games }}" as="g" hint-placeholder-count="4">
+          <div>
+            <div style="display:flex;align-items:baseline;gap:var(--space-3);flex-wrap:wrap;margin-bottom:var(--space-2)">
+              <div style="font-family:var(--font-heading);font-size:16px">{{ g.label }}</div>
+              <div style="font-size:12px;color:var(--color-neutral-500)">{{ g.note }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+                <div class="card" style="padding:var(--space-2) var(--space-4);display:flex;flex-direction:row;gap:var(--space-3);align-items:baseline;flex-wrap:wrap">
+                  <span style="flex:1 1 200px;font-size:14px">{{ r.loc }}</span>
+                  <span style="font-size:12px;color:var(--color-neutral-400)">{{ r.method }}</span>
+                  <span style="font-size:12px;color:var(--color-accent-300);min-width:70px">{{ r.levels }}</span>
+                  <span style="font-size:12px;color:var(--color-neutral-500);min-width:40px">{{ r.rate }}</span>
+                  <sc-if value="{{ r.hasCond }}"><span style="flex-basis:100%;font-size:11.5px;color:var(--color-neutral-500)">{{ r.cond }}</span></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ wtf.none }}">
+          <div style="font-size:14px;color:var(--color-neutral-300);text-wrap:pretty">{{ wtf.noneText }}</div>
+        </sc-if>
+        <div style="font-size:11.5px;color:var(--color-neutral-500);text-wrap:pretty;padding-top:var(--space-2);border-top:1px solid var(--color-divider)">Ball availability is a guide to where each ball can be bought or earned in that game; rare or limited ones are noted. Gifts, trades and eggs come in a set ball, so they only show for Poké Ball (or any ball).</div>
+      </div>
+    </div>
+  </sc-if>
 
   <sc-if value="{{ huntOpen }}">
     <div style="position:fixed;inset:0;z-index:60;background:var(--color-bg);display:flex;flex-direction:column;gap:var(--space-4);padding:var(--space-6)">
@@ -2921,6 +3320,29 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
         <div class="lighten" style="width:min(220px,48vw);height:min(220px,48vw);background-repeat:no-repeat;background-position:center;background-size:contain;background-image:{{ huntBg }}"></div>
         <div style="font-family:var(--font-heading);font-size:clamp(56px,16vw,120px);line-height:1;font-weight:500;font-variant-numeric:tabular-nums">{{ shinyHunt.n }}</div>
         <div style="font-size:13px;color:var(--color-neutral-400);max-width:420px;text-align:center;text-wrap:pretty">{{ shinyHunt.oddsLine }}</div>
+        <sc-if value="{{ shinyHunt.hasOdds }}">
+          <div style="width:min(420px,80vw);height:6px;border-radius:999px;background:var(--color-neutral-800);overflow:hidden"><div style="height:100%;width:{{ shinyHunt.oddsPct }};background:var(--color-accent-500)"></div></div>
+        </sc-if>
+        <div id="pk-hunt-time" style="font-size:12px;color:var(--color-neutral-500);font-variant-numeric:tabular-nums;min-height:1.4em"></div>
+        <div style="display:flex;gap:var(--space-2);flex-wrap:wrap;justify-content:center">
+          <select class="input" data-d="how" value="{{ shinyHunt.how }}" onChange="{{ onHunt }}" aria-label="What you're counting" style="width:auto;font-size:12px">
+            <option value="enc">Encounters</option><option value="sr">Soft resets</option><option value="egg">Eggs</option><option value="raid">Raids</option><option value="other">Other</option>
+          </select>
+          <select class="input" data-d="odds" value="{{ shinyHunt.odds }}" onChange="{{ onHunt }}" aria-label="Odds" style="width:auto;font-size:12px">
+            <option value="">Odds: not set</option>
+            <option value="f8">Full odds, Gen II–V (1/8192)</option>
+            <option value="f4">Full odds, Gen VI+ (1/4096)</option>
+            <option value="c">Shiny Charm (1/1365)</option>
+            <option value="m">Masuda method (1/683)</option>
+            <option value="mc">Masuda + Charm (1/512)</option>
+            <option value="r">Poké Radar chain 40, Gen IV (1/200)</option>
+            <option value="sos">SOS chain 31+ with Charm (1/273)</option>
+            <option value="dm">Dynamax Adventure (1/300)</option>
+            <option value="dmc">Dynamax Adventure + Charm (1/100)</option>
+            <option value="sv3">Scarlet/Violet, Sparkling 3 (1/1024)</option>
+            <option value="svo">SV outbreak 60+, Sparkling 3, Charm (1/512)</option>
+          </select>
+        </div>
       </div>
       <div style="display:flex;gap:var(--space-3)">
         <button class="btn btn-ghost" data-d="-1" onClick="{{ onHunt }}" style="min-width:72px;min-height:72px;font-size:18px">−1</button>
@@ -2952,7 +3374,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 // Pokédex data and the sprite file settings, and asks for the owner's name.
 const FRIENDS = !!window.pokedexFriends;
 // Bump with every release (also the footer badge and the changelog).
-const APP_VERSION = '2.56';
+const APP_VERSION = '2.75';
 
 class Component extends DCLogic {
   constructor(p){
@@ -3085,7 +3507,12 @@ class Component extends DCLogic {
     this.BALLS = ['Poké Ball','Great Ball','Ultra Ball','Master Ball','Premier Ball','Luxury Ball',
       'Heal Ball','Net Ball','Dive Ball','Nest Ball','Repeat Ball','Timer Ball','Quick Ball','Dusk Ball',
       'Fast Ball','Level Ball','Lure Ball','Heavy Ball','Love Ball','Friend Ball','Moon Ball','Sport Ball',
-      'Safari Ball','Beast Ball','Dream Ball','Cherish Ball','Park Ball','Strange Ball'];
+      'Safari Ball','Beast Ball','Dream Ball','Cherish Ball','Park Ball',
+      // Legends: Arceus balls (HOME keeps them; other games show them as a Strange Ball)
+      'Hisuian Poké Ball','Hisuian Great Ball','Hisuian Ultra Ball','Feather Ball','Wing Ball','Jet Ball',
+      'Hisuian Heavy Ball','Leaden Ball','Gigaton Ball','Origin Ball','Strange Ball'];
+    this.HISUI_BALLS = ['Hisuian Poké Ball','Hisuian Great Ball','Hisuian Ultra Ball','Feather Ball','Wing Ball','Jet Ball',
+      'Hisuian Heavy Ball','Leaden Ball','Gigaton Ball','Origin Ball'];
     this.STATS = [['hp','HP'],['atk','Atk'],['def','Def'],['spa','Sp.Atk'],['spd','Sp.Def'],['spe','Speed']];
     this.NATURES = {Hardy:['',''], Lonely:['atk','def'], Brave:['atk','spe'], Adamant:['atk','spa'], Naughty:['atk','spd'],
       Bold:['def','atk'], Docile:['',''], Relaxed:['def','spe'], Impish:['def','spa'], Lax:['def','spd'],
@@ -3416,7 +3843,7 @@ class Component extends DCLogic {
       shinyN: tally(s.shinyCaught), shinyBaseN: species(s.shinyCaught), shinySpeciesT: list.filter(e=>!this.shinyLocked(e.num)).length,
       alphaN: tally(s.alpha), giftN: tally(s.gifts), gmaxN: tally(s.gmax), gmaxT: gmaxT,
       ribN: Object.keys(s.ribbons || {}).reduce((a, k)=>a + (s.ribbons[k] || []).length, 0),
-      hof: s.hof || {}, friends: FRIENDS, version: ver, quizCorrect: (s.quiz || {}).total || 0};
+      hof: s.hof || {}, friends: FRIENDS, version: ver, quizCorrect: (s.quiz || {}).total || 0, quizDays: (s.quiz || {}).days || {}, hunts: s.huntLog || [], genBest: (s.genQuiz || {}).best || {}, dexBest: (s.dexTrain || {}).best || {}};
   }
   honourCheck(){
     const H = window.pkHonours, s = this.state.save;
@@ -3439,12 +3866,35 @@ class Component extends DCLogic {
     if(window.pkHonours) window.pkHonours.celebrate([{id: id, by: by}]);
     return true;
   }
-  componentDidUpdate(){ this.honourCheck(); const t = (this.state.save||{}).theme || 'Nocturne'; if(t !== this._theme){ this._theme = t; this.applyTheme(t); }
+  // Hunt mode: time spent and pace, shown live, and added to the hunt's total when it closes.
+  huntTick(){
+    const el = document.getElementById('pk-hunt-time'); if(!el || !this._huntT0) return;
+    const c = ((this.state.save || {}).shinyCount || {})[this._huntK] || {}, secs = Math.floor((Date.now() - this._huntT0) / 1000);
+    const mmss = t => Math.floor(t / 60) + ':' + ('0' + (t % 60)).slice(-2);
+    const done = Math.max(0, (c.n || 0) - (this._huntN0 || 0)), rate = secs >= 60 ? Math.round(done / (secs / 3600)) : 0;
+    const tot = Math.round(((c.ms || 0) + secs * 1000) / 60000);
+    el.textContent = 'This session ' + mmss(secs) + (rate ? ' · ' + rate.toLocaleString() + ' an hour' : '') + (tot >= 1 ? ' · ' + (tot < 60 ? tot + ' min' : Math.floor(tot / 60) + 'h ' + (tot % 60) + 'm') + ' in all' : '');
+  }
+  huntTimer(){
+    const open = !!this.state.huntOpen;
+    if(open && !this._huntT0){
+      this._huntT0 = Date.now();
+      if(!this._huntK){ const e = this.byNum(this.state.current); this._huntK = e ? this.formKey(e.num, this.state.form || 'Normal') : ''; }
+      this._huntN0 = (((this.state.save || {}).shinyCount || {})[this._huntK] || {}).n || 0;
+      clearInterval(this._huntIv); this._huntIv = setInterval(()=>this.huntTick(), 1000); setTimeout(()=>this.huntTick(), 50);
+    } else if(!open && this._huntT0){
+      const ms = Date.now() - this._huntT0, k = this._huntK; this._huntT0 = 0; this._huntK = ''; clearInterval(this._huntIv);
+      const all = Object.assign({}, (this.state.save || {}).shinyCount || {});
+      if(k && all[k]){ all[k] = Object.assign({}, all[k], {ms: (all[k].ms || 0) + ms}); this.persist({shinyCount: all}); }
+    }
+  }
+  componentDidUpdate(){ this.huntTimer(); this.honourCheck(); const t = (this.state.save||{}).theme || 'Nocturne'; if(t !== this._theme){ this._theme = t; this.applyTheme(t); }
     if(this.state.ready && !this._tabs){ this.tabsLoad(); this.forceUpdate(); }
     if(this._prevView !== undefined && this.state.view !== this._prevView && !this._tabApplying && window.pkScreen) window.pkScreen.blip();
     this._prevView = this.state.view;
     { const sc = this.state.save || {}, key = String(sc.crt) + '|' + (sc.transitions !== false) + '|' + t;
-      if(key !== this._crtKey && window.pkScreen){ this._crtKey = key; window.pkScreen.apply(sc.crt, sc.transitions !== false); } }
+      const key2 = key + '|' + (sc.depth !== false) + '|' + (sc.season || 'auto');
+      if(key2 !== this._crtKey && window.pkScreen){ this._crtKey = key2; window.pkScreen.apply(sc.crt, sc.transitions !== false, sc.depth !== false, sc.season || 'auto'); } }
     // Remember the last dozen dex entries opened, kept on this device only.
     const st = this.state;
     const isPc = st.view === 'pc' || st.view === 'gbox';
@@ -3467,6 +3917,7 @@ class Component extends DCLogic {
   onKey(e){
     if(e.metaKey || e.ctrlKey || e.altKey) return;
     // Esc closes an open panel first: settings, progress or about.
+    if(e.key === 'Escape' && this.state.wtfOpen){ this.setState({wtfOpen: false}); return; }
     if(e.key === 'Escape' && (this.state.settings || this.state.statsOpen || this.state.infoOpen)){
       this.setState({settings:false, statsOpen:false, infoOpen:false}); return; }
     if(this.state.huntOpen){
@@ -3643,7 +4094,10 @@ class Component extends DCLogic {
       'Quick Ball':'#4bb2d8','Dusk Ball':'#5c7050','Fast Ball':'#e3a93c','Level Ball':'#d8483c',
       'Lure Ball':'#4aa8c4','Heavy Ball':'#7b8794','Love Ball':'#e58bb4','Friend Ball':'#8cc46a',
       'Moon Ball':'#4d5f8c','Sport Ball':'#d4762f','Dream Ball':'#c58ed4','Beast Ball':'#4f7fae',
-      'Safari Ball':'#8c9a5b','Cherish Ball':'#c8403a','Park Ball':'#d7c04a','Strange Ball':'#7a6bb0'};
+      'Safari Ball':'#8c9a5b','Cherish Ball':'#c8403a','Park Ball':'#d7c04a','Strange Ball':'#7a6bb0',
+      'Hisuian Poké Ball':'#b5523f','Hisuian Great Ball':'#4a78a8','Hisuian Ultra Ball':'#8f8f99','Feather Ball':'#5fb0d8',
+      'Wing Ball':'#3f8fc4','Jet Ball':'#2f6fa8','Hisuian Heavy Ball':'#7f8a96','Leaden Ball':'#5f6a78','Gigaton Ball':'#3f4a58',
+      'Origin Ball':'#d0d6e8'};
     return m[name] || 'var(--color-neutral-600)';
   }
   iconBtnStyle(on){
@@ -3656,7 +4110,9 @@ class Component extends DCLogic {
   itemSrc(name){
     if(!name) return '';
     const s = this.state.save || {};
-    const src = (s.itemPattern || 'images/items/{slug}.png').replace('{slug}', this.slug(name));
+    // Item images saved under a different name to the one shown here.
+    const ALIAS = {'Hisuian Heavy Ball': 'Heavy Ball (Hisui)'};
+    const src = (s.itemPattern || 'images/items/{slug}.png').replace('{slug}', this.slug(ALIAS[name] || name));
     this.probe(src);
     return src;
   }
@@ -3690,7 +4146,7 @@ class Component extends DCLogic {
     if(this._sfTotal && this._sfFor === list) return this._sfTotal;
     let n = 0;
     list.forEach(e=>{ if(this.shinyLocked(e.num)) return;
-      n += this.formsFor(e).filter(f=>!this.specialOf(e.num, f)).length; });
+      n += this.formsFor(e).filter(f=>!this.specialOf(e.num, f) && (window.SHINY_LOCKED_FORMS || []).indexOf(e.num + ':' + f) < 0).length; });
     this._sfFor = list; this._sfTotal = n;
     return n;
   }
@@ -4109,6 +4565,20 @@ class Component extends DCLogic {
   }
   // Games a Pokémon can have been caught in, with the handheld it ran on.
   // "bank" marks the DS and 3DS games whose only route to HOME is Pokémon Bank.
+  // The game an address-book trainer belongs to: the one picked for it, or
+  // one recognised in its note ("Pokemon Violet", "my Sword file" …).
+  otGameOf(o){ if(!o) return '';
+    if(o.game !== undefined) return o.game || '';
+    const note = String(o.note || '').toLowerCase().replace(/pok[eé]mon/g, ' ').replace(/[’']/g, '');
+    if(!note.trim()) return '';
+    const AKA = {lgp:'lp', lgpe:'lp', lge:'le', bdsp:'bd', pla:'la', usum:'us', oras:'or', frlg:'fr', hgss:'hg', bw2:'b2', sv:'', swsh:'', za:'za'};
+    const games = this.MET_GAMES().slice().sort((a, b)=>b.label.length - a.label.length);
+    for(const g of games){ const lab = g.label.toLowerCase().replace(/[’']/g, '');
+      const re = new RegExp('(^|[^a-z0-9])' + lab.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-z0-9])');
+      if(re.test(note)) return g.id; }
+    const w = note.match(/[a-z0-9]+/g) || [];
+    for(const x of w) if(AKA[x]) return AKA[x];
+    return ''; }
   MET_GAMES(){ return [
     ['ru','Ruby','gba'],['sa','Sapphire','gba'],['em','Emerald','gba'],['fr','FireRed','gba'],['lg','LeafGreen','gba'],
     ['col','Colosseum / XD','gc'],
@@ -4536,7 +5006,7 @@ class Component extends DCLogic {
   // collection, settings and anything app-wide are shared by every tab.
   // Locked tabs keep a saved place you can always jump back to, and come
   // back each time the app opens; unlocked tabs last until you close the app.
-  tabSkip(k){ return {save:1, nameLater:1, grant:1, grantKind:1, evDraft:1, base:1, imgOk:1, ready:1, toast:1, settings:1, swReady:1, storageLabel:1,
+  tabSkip(k){ return {save:1, wtfOpen:1, nameLater:1, grant:1, grantKind:1, evDraft:1, cmp:1, chQuitAsk:1, base:1, imgOk:1, ready:1, toast:1, settings:1, swReady:1, storageLabel:1,
     spriteDetail:1, spritePct:1, spriteProg:1, blobTick:1, diagTick:1, nowTick:1, showDiag:1,
     importPending:1, recent:1, csDraft:1, huntOpen:1, ms:1, shinyMode:1, statsOpen:1, infoOpen:1}[k] === 1; }
   tabSnap(){ const st = this.state, o = {};
@@ -4596,7 +5066,7 @@ class Component extends DCLogic {
   tabLabel(st){
     const L = {menu:'Menu', dex:'Search', list:'Browse', gifts:'Events', enc:'Encounters', pc:'Home PC', gbox:'Game boxes',
       breed:'Breeding', team:'Team', compare:'Compare', calc:'Damage', moves:'Moves', items:'Items', guides:'Guides',
-      run:'Run', year:'Year', trainer:'Trainer Card'};
+      run:'Run', year:'Year', journal:'Journal', challenge:'Challenges', trainer:'Trainer Card'};
     let label = L[st.view] || 'Page';
     if(st.view === 'dex'){ const e = this.byNum(st.current);
       if(e) label = e.name + (st.form && st.form !== 'Normal' ? ' (' + st.form + ')' : ''); }
@@ -4631,13 +5101,16 @@ class Component extends DCLogic {
     }); }
   renderVals(){
     const st = this.state, s = st.save || {}, list = this.state.ready ? this.all() : [];
+    // Fan games: the built-in ones plus any you've added, in the Hall of Fame list.
+    if(window.HOF_FAN_BUILTIN && window.HOF_GENS){ const fg = window.HOF_GENS.filter(g=>g.fan)[0];
+      if(fg && this._fanSrc !== s.fanGames){ this._fanSrc = s.fanGames; fg.games = window.HOF_FAN_BUILTIN.concat((s.fanGames || []).map(g=>Object.assign({fan: true}, g))); } }
     const cur = this.byNum(st.current) || list[0];
     const colors = window.TYPE_COLORS || {};
-    const views = [['menu','Menu'],['dex','Search'],['list','Browse'],['gifts','Events'],['enc','Encounters'],['pc','Home PC'],['gbox','Game boxes'],['breed','Breeding'],['team','Team'],['compare','Compare'],['calc','Damage'],['moves','Moves'],['items','Items'],['guides','Guides'],['run','Run'],['year','Year'],['trainer','Trainer Card']];
+    const views = [['menu','Menu'],['dex','Search'],['list','Browse'],['gifts','Events'],['enc','Encounters'],['pc','Home PC'],['gbox','Game boxes'],['breed','Breeding'],['team','Team'],['compare','Compare'],['calc','Damage'],['moves','Moves'],['items','Items'],['guides','Guides'],['run','Run'],['year','Year'],['journal','Journal'],['challenge','Challenges'],['trainer','Trainer Card']];
     const SECTION_OF = {dex:'dex', list:'dex', gifts:'dex', enc:'dex', pc:'pc', gbox:'pc', breed:'pc', team:'battle', compare:'battle', calc:'battle', moves:'battle',
-      items:'items', guides:'guides', run:'guides', year:'guides', trainer:'trainer'};
+      items:'items', guides:'guides', run:'guides', year:'guides', journal:'guides', challenge:'guides', trainer:'trainer'};
     const SECTION_VIEWS = {dex:['menu','dex','list','gifts','enc'], pc:['menu','pc','gbox','breed'], battle:['menu','team','compare','calc','moves'],
-      items:['menu','items'], guides:['menu','guides','run','year'], trainer:['menu','trainer']};
+      items:['menu','items'], guides:['menu','guides','run','year','journal','challenge'], trainer:['menu','trainer']};
     const section = SECTION_OF[st.view] || 'dex';
     const moveDb = this.moveDb(), itemDb = this.itemDb();
     const allMoveNames = moveDb.filter(m=>m.selectable).map(m=>m.name);
@@ -5385,7 +5858,7 @@ class Component extends DCLogic {
       for(let i = 0; i < 30; i++){
         const e = pcAll[pcBox * 30 + i];
         if(!e){ out.push({i:i, key:'', blank:true, filled:false, empty:false, name:'', pad:'', img:'',
-          hasImg:false, ballImg:'', hasBall:false, isShiny:false, edge:'var(--color-neutral-900)',
+          hasImg:false, ballImg:'', ballName:'', hasBall:false, isShiny:false, edge:'var(--color-neutral-900)',
           bg:'transparent', title:''}); continue; }
         const sp = this.byNum(e.num);
         const rk = e.realKey || e.key;
@@ -5409,7 +5882,7 @@ class Component extends DCLogic {
           bgImage: this.imgOk(img) ? "url('" + img + "')" : 'none',
           imgFilter: got ? 'none' : 'grayscale(1) brightness(.45) contrast(.7)',
           imgOpacity: got ? '1' : '.5',
-          ballImg:bsrc, hasBall: got && !!bsrc && this.imgOk(bsrc),
+          ballImg:bsrc, ballName: ball || '', hasBall: got && !!bsrc && this.imgOk(bsrc),
           isShiny: got && shinyE,
           isExempt: pcMeta.lux && this.luxExempt(rk, s),
           edge: got && pend ? 'var(--color-accent-300)' : got ? 'var(--color-accent-700)' : 'var(--color-neutral-800)',
@@ -5487,6 +5960,11 @@ class Component extends DCLogic {
       transCls: 'btn ' + (s.transitions !== false ? 'btn-primary' : 'btn-ghost'),
       transLabel: 'Page transitions: ' + (s.transitions !== false ? 'on' : 'off'),
       onTrans: () => this.persist({transitions: s.transitions === false}),
+      depthCls: 'btn ' + (s.depth !== false ? 'btn-primary' : 'btn-ghost'),
+      depthLabel: s.depth !== false ? '3D: on' : 'Flat',
+      onDepth: () => this.persist({depth: s.depth === false}),
+      seasonVal: s.season || 'auto',
+      onSeason: e => this.persist({season: e.target.value}),
       isGbox: st.view === 'gbox',
       gbox: gbox || {},
       onGbGame: e => this.setState({gbGame: e.target.value, gbBox: 0}),
@@ -5727,7 +6205,9 @@ class Component extends DCLogic {
         {title:'Guides', note:'Reference', tiles:[
           {id:'guides', label:'Guides', sub:'Walkthroughs and how-tos, added over time', stat:'7', statLabel:'guides', soon:false, cursor:'pointer'},
           {id:'run', label:'Run dashboard', sub:'One game\u2019s progress, targets and next stops on one page', stat:'', statLabel:'Emerald by default', soon:false, cursor:'pointer'},
-          {id:'year', label:'Year in review', sub:'What you caught, hunted and finished this year', stat:String(new Date().getFullYear()), statLabel:'so far', soon:false, cursor:'pointer'}
+          {id:'year', label:'Year in review', sub:'What you caught, hunted and finished this year', stat:String(new Date().getFullYear()), statLabel:'so far', soon:false, cursor:'pointer'},
+          {id:'journal', label:'Journal', sub:'Your Pokédex day by day: catches, shinies, honours, runs and quizzes', stat:String(Object.keys(s.caughtAt || {}).length), statLabel:'dated catches', soon:false, cursor:'pointer'},
+          {id:'challenge', label:'Challenge runs', sub:'Roll random rules for a playthrough and track how it goes', stat:((s.challenge || {}).active ? 'On' : String(((s.challenge || {}).history || []).filter(h=>h.result === 'won').length)), statLabel:((s.challenge || {}).active ? 'a run is going' : 'runs beaten'), soon:false, cursor:'pointer'}
         ]},
       ].map(g=>Object.assign(g, {
         open: st.menuOpen === g.title,
@@ -5744,7 +6224,7 @@ class Component extends DCLogic {
       menuPctStr: Math.round(caughtN / Math.max(1, list.length) * 100) + '%',
       isDex: st.view==='dex', isList: st.view==='list', isTeam: st.view==='team', isCompare: st.view==='compare',
       isMoves: st.view==='moves', isItems: st.view==='items', isGifts: st.view==='gifts',
-      isTrainer: st.view==='trainer', isGuides: st.view==='guides', isRun: st.view==='run', isYear: st.view==='year',
+      isTrainer: st.view==='trainer', isGuides: st.view==='guides', isRun: st.view==='run', isYear: st.view==='year', isChallenge: st.view==='challenge', isJournal: st.view==='journal',
       run: (() => { if(st.view !== 'run') return {};
         const eg = st.runGame || 'e', G = this.ENC_GAMES().filter(g=>g.id === eg)[0] || {label:''};
         this.encDb();
@@ -6020,15 +6500,23 @@ class Component extends DCLogic {
         {label:'Shiny living forms', value:shinyN + ' / ' + shinyT,
           pct: Math.round(shinyN / Math.max(1, shinyT) * 100) + '%'}
       ],
-      otBook: (s.otBook||[]).map((o,i)=>({i:i, name:(o&&o.name)||'', tid:(o&&o.tid)||'', note:(o&&o.note)||'',
-        countLabel: (function(m, nm){ let n = 0; Object.keys(m).forEach(k=>{ if(m[k] && m[k].name === nm) n++; });
-          return nm ? (n + (n === 1 ? ' Pokémon' : ' Pokémon')) : 'Unnamed'; })(s.otOf||{}, (o&&o.name)||'')})),
-      onOtAdd: () => this.persist({otBook: (s.otBook||[]).concat([{name:'', tid:'', note:''}])}),
-      onOtBookField: e => { const i = +e.currentTarget.dataset.i, k = e.currentTarget.dataset.key;
-        const book = (s.otBook||[]).map((o,j)=> j === i ? Object.assign({}, o, {[k]: e.target.value}) : o);
-        this.persist({otBook: book}); },
-      onOtRemove: e => { const i = +e.currentTarget.dataset.i;
-        this.persist({otBook: (s.otBook||[]).filter((o,j)=>j !== i)}); },
+      ...(() => {
+        // Two address books: your own trainers, and gift / event OTs.
+        const KEY = b => b === 'gift' ? 'otGifts' : 'otBook';
+        const cards = arr => (arr||[]).map((o,i)=>({i:i, name:(o&&o.name)||'', tid:(o&&o.tid)||'', note:(o&&o.note)||'', game:this.otGameOf(o),
+          countLabel: (function(m, nm, tid){ let n = 0; Object.keys(m).forEach(k=>{ if(m[k] && m[k].name === nm && (!tid || String(m[k].tid || '') === String(tid))) n++; });
+            return nm ? n + ' Pokémon' : 'Unnamed'; })(s.otOf||{}, (o&&o.name)||'', (o&&o.tid)||'')}));
+        return {
+          otBook: cards(s.otBook), otGifts: cards(s.otGifts),
+          onOtAdd: e => { const k = KEY(e.currentTarget.dataset.book); this.persist({[k]: (s[k]||[]).concat([{name:'', tid:'', note:''}])}); },
+          onOtBookField: e => { const bk = KEY(e.currentTarget.dataset.book), i = +e.currentTarget.dataset.i, k = e.currentTarget.dataset.key;
+            this.persist({[bk]: (s[bk]||[]).map((o,j)=> j === i ? Object.assign({}, o, {[k]: e.target.value}) : o)}); },
+          onOtRemove: e => { const bk = KEY(e.currentTarget.dataset.book), i = +e.currentTarget.dataset.i;
+            this.persist({[bk]: (s[bk]||[]).filter((o,j)=>j !== i)}); },
+          onOtMove: e => { const from = KEY(e.currentTarget.dataset.book), to = from === 'otGifts' ? 'otBook' : 'otGifts', i = +e.currentTarget.dataset.i;
+            const o = (s[from]||[])[i]; if(!o) return;
+            this.persist({[from]: (s[from]||[]).filter((x,j)=>j !== i), [to]: (s[to]||[]).concat([o])}); }
+        }; })(),
       trainerSpeciesOpts: st.view === 'trainer' ? list.map(e=>this.pad(e.num) + '  ' + e.name) : [],
       onHofGen: e => { const g = e.currentTarget.dataset.gen;
         this.setState({hofOpen: st.hofOpen === g ? null : g}); },
@@ -6075,6 +6563,16 @@ class Component extends DCLogic {
               })};
           })};
       }),
+      fanCustom: (s.fanGames || []).map(g=>({id: g.id, name: g.name, label: g.name + ' · ' + (g.badges || []).length + ' badges'})),
+      hasFanCustom: (s.fanGames || []).length > 0,
+      onFanAdd: e => { e.preventDefault(); const f = e.currentTarget, name = String(f.fgname.value || '').trim().slice(0, 40);
+        if(!name){ this.flash('Give the fan game a name.'); return; }
+        const raw = String(f.badges.value || '').trim(), n = /^\d+$/.test(raw) ? Math.max(1, Math.min(24, +raw)) : 0;
+        const badges = n ? Array.from({length: n}, (x, i)=>'Badge ' + (i + 1)) : raw ? raw.split(',').map(x=>x.trim()).filter(Boolean).slice(0, 24) : Array.from({length: 8}, (x, i)=>'Badge ' + (i + 1));
+        const id = 'fg' + Date.now().toString(36);
+        this.persist({fanGames: (s.fanGames || []).concat([{id, name, region: String(f.region.value || '').trim().slice(0, 24) || 'Fan region', badges, note: 'Added by you'}])});
+        f.reset(); this.flash(name + ' added under Fan games.'); },
+      onFanRemove: e => { const id = e.currentTarget.dataset.id; this.persist({fanGames: (s.fanGames || []).filter(g=>g.id !== id)}); },
       onNuzToggle: e => this.nuzEdit(e.currentTarget.dataset.game, n=>{ n.on = !n.on; }),
       onNuzRule: e => { const r = e.currentTarget.dataset.rule;
         this.nuzEdit(e.currentTarget.dataset.game, n=>{ n.rules = Object.assign({}, n.rules); n.rules[r] = !n.rules[r]; }); },
@@ -6237,11 +6735,132 @@ class Component extends DCLogic {
       huntBg: (() => { if(!cur) return 'none'; const src = this.srcFor(cur, 'shiny', entry ? entry.formLabel : 'Normal');
         return this.imgOk(src) ? "url('" + src + "')" : 'none'; })(),
       huntGot: !!(cur && (s.shinyCaught||{})[this.formKey(cur.num, entry ? entry.formLabel : 'Normal')]),
-      onHuntOpen: () => this.setState({huntOpen: true}),
+      // ---- Where to find: which games and places this Pokémon can be caught, in a chosen ball, optionally as an Alpha
+      wtf: (() => { if(!st.wtfOpen || !cur) return {open: false, games: [], balls: []};
+        const G = this.ENC_GAMES(), ML = this.METHOD_LABELS(), ball = st.wtfBall || '';
+        const STD = ['Poké Ball','Great Ball','Ultra Ball','Master Ball','Premier Ball'];
+        const G3 = STD.concat(['Net Ball','Dive Ball','Nest Ball','Repeat Ball','Timer Ball','Luxury Ball']);
+        const G4 = G3.concat(['Heal Ball','Quick Ball','Dusk Ball']);
+        const APRI = ['Fast Ball','Level Ball','Lure Ball','Heavy Ball','Love Ball','Friend Ball','Moon Ball'];
+        // Which balls each game lets you use on wild Pokémon, and notes on the rare ones.
+        const BG = {r:G3.concat(['Safari Ball']), s:G3.concat(['Safari Ball']), e:G3.concat(['Safari Ball']),
+          f:G3.concat(['Safari Ball']), l:G3.concat(['Safari Ball']),
+          d:G4.concat(['Safari Ball']), p:G4.concat(['Safari Ball']), t:G4.concat(['Safari Ball']),
+          h:G4.concat(APRI, ['Safari Ball','Sport Ball']), g:G4.concat(APRI, ['Safari Ball','Sport Ball']),
+          b:G4, w:G4, B:G4, W:G4, x:G4, y:G4, o:G4, a:G4,
+          u:G4.concat(APRI, ['Beast Ball','Dream Ball']), m:G4.concat(APRI, ['Beast Ball','Dream Ball']),
+          U:G4.concat(APRI, ['Beast Ball','Dream Ball']), M:G4.concat(APRI, ['Beast Ball','Dream Ball']),
+          P:STD, V:STD,
+          S:G4.concat(APRI, ['Beast Ball','Dream Ball','Safari Ball','Sport Ball']), H:G4.concat(APRI, ['Beast Ball','Dream Ball','Safari Ball','Sport Ball']),
+          I:G4.concat(['Safari Ball']), J:G4.concat(['Safari Ball']),
+          A:this.HISUI_BALLS.concat(['Strange Ball']),
+          K:G4.concat(APRI, ['Beast Ball','Dream Ball','Safari Ball','Sport Ball']), L:G4.concat(APRI, ['Beast Ball','Dream Ball','Safari Ball','Sport Ball']),
+          Z:G4};
+        const RARE = {u:'one of each', m:'one of each', U:'one of each', M:'one of each', S:'from the Ball Guy and Cram-o-matic', H:'from the Ball Guy and Cram-o-matic',
+          K:'rare: Tera Raid and DLC rewards', L:'rare: Tera Raid and DLC rewards'};
+        const special = b => APRI.indexOf(b) >= 0 || ['Beast Ball','Dream Ball','Safari Ball','Sport Ball'].indexOf(b) >= 0;
+        const fixed = m => /gift|trade|egg/.test(m);
+        const safariZone = l => /safari|great marsh/i.test(l);
+        // The form being viewed decides which games count: a regional form only
+        // in its own region, a Gigantamax only in Sword / Shield.
+        const wForm = entry ? entry.formLabel : 'Normal', wGmax = !!(entry && entry.isGmax);
+        const wReg = (/^(Alolan|Galarian|Hisuian|Paldean)/.exec(wForm || '') || [])[1] || '';
+        const ONLY = {Alolan:'umUM', Galarian:'SH', Hisuian:'A', Paldean:'KL'};
+        const onlyGames = wGmax ? 'SH' : wReg ? ONLY[wReg] : (cur.num === 670 && wForm === 'Eternal Flower') ? 'Z' : '';
+        // Species Legends: Arceus only has in their Hisuian form.
+        const HISUI_ONLY = [58,59,100,101,157,211,503,549,570,571,628,705,706,713,724];
+        const skipA = !wReg && !wGmax && HISUI_ONLY.indexOf(cur.num) >= 0;
+        const alphaOk = {A: !wGmax && (!wReg || wReg === 'Hisuian') && !skipA && (window.ALPHA_PLA || []).indexOf(cur.num) >= 0,
+          Z: !wGmax && !wReg && (window.ALPHA_ZA || []).indexOf(cur.num) >= 0 && (!window.alphaFormOk || window.alphaFormOk(cur.num, wForm))};
+        const canAlpha = alphaOk.A || alphaOk.Z;
+        const alpha = !!st.wtfAlpha && canAlpha;
+        this.encDb();
+        const wEternal = cur.num === 670 && wForm === 'Eternal Flower';
+        let rows = (this.encFor(cur.num) || []).filter(r=>cur.num !== 670 || wEternal === /Eternal Flower/.test(r.cond || ''));
+        // A Gigantamax or regional form can also come from catching an earlier
+        // stage there and evolving it (Bulbasaur → Gigantamax Venusaur …).
+        if(onlyGames && !wEternal && !(wGmax && [25, 133, 809].indexOf(cur.num) >= 0)){ const EF = window.EVO_FROM || {}; let n = cur.num, guard = 0;
+          while(EF[n] && guard++ < 4){ const pre = EF[n][0], pe = this.byNum(pre);
+            (this.encFor(pre) || []).forEach(r=>{ if([...r.games].some(g=>onlyGames.indexOf(g) >= 0))
+              rows = rows.concat([Object.assign({}, r, {cond: 'As ' + (pe ? pe.name : '#' + pre) + ', then evolve it' + (r.cond ? ' · ' + r.cond : '')})]); });
+            n = pre; } }
+        const games = [];
+        G.forEach(g=>{
+          if(alpha && !(alphaOk[g.id])) return;
+          if(onlyGames && onlyGames.indexOf(g.id) < 0) return;
+          if(skipA && g.id === 'A') return;
+          if(ball && (BG[g.id] || []).indexOf(ball) < 0) return;
+          const here = rows.filter(r=>r.games.indexOf(g.id) >= 0).filter(r=>{
+            if(ball === 'Origin Ball') return cur.num === 493;
+            if(fixed(r.method)) return !ball || ball === (g.id === 'A' ? 'Hisuian Poké Ball' : 'Poké Ball') || (g.id === 'A' && ball === 'Strange Ball');
+            const sz = safariZone(r.loc) && ['r','s','e','f','l','d','p','t','h','g','I','J'].indexOf(g.id) >= 0;
+            if(sz) return !ball || ball === 'Safari Ball';
+            if(ball === 'Safari Ball' && 'SHKL'.indexOf(g.id) < 0) return false;
+            if(ball === 'Sport Ball' && 'hg'.indexOf(g.id) >= 0) return /national park/i.test(r.loc);
+            return true; });
+          if(!here.length) return;
+          const seen = {}, out = [];
+          here.forEach(r=>{ const k = r.loc + '|' + r.method + '|' + r.levels + '|' + (r.cond || ''); if(seen[k]) return; seen[k] = 1;
+            out.push({loc: r.loc, method: ML[r.method] || r.method, levels: r.levels ? 'Lv ' + r.levels : '', rate: r.rate ? (/%$/.test(r.rate) || /★/.test(r.rate) ? r.rate : r.rate + '%') : '',
+              cond: r.cond || '', hasCond: !!r.cond}); });
+          const note = [g.approx ? 'locations approximate' : '', alpha ? 'look for the big red-eyed ones in these areas' : '', ball && special(ball) && RARE[g.id] ? ball + ': ' + RARE[g.id] : ''].filter(Boolean).join(' · ');
+          games.push({label: g.label, note: note, rows: out});
+        });
+        // Pair up twin versions with identical results (Ruby + Sapphire …)
+        const merged = [];
+        games.forEach(g=>{ const prev = merged[merged.length - 1];
+          if(prev && JSON.stringify(prev.rows) === JSON.stringify(g.rows) && prev.note === g.note) prev.label += ' · ' + g.label; else merged.push(g); });
+        const ballName = ball || 'any ball';
+        let tip = '';
+        const fName = entry && entry.formDisplay && wForm !== 'Normal' ? entry.formDisplay + ' ' + cur.name : cur.name;
+        if(wGmax){
+          if([25, 133].indexOf(cur.num) >= 0) tip = 'Gigantamax ' + cur.name + ': a gift at the Hammerlocke Pokémon Centre in Sword / Shield if you have Let’s Go Pikachu or Eevee save data, or from Gigantamax raids. Max Soup doesn’t work on it.';
+          else if(cur.num === 809) tip = 'Gigantamax Melmetal comes from Pokémon HOME (Meltan sent over from Pokémon GO). Max Soup doesn’t work on it.';
+          else tip = 'Any ' + cur.name + ' from Sword / Shield can become Gigantamax: give it Max Soup at the Master Dojo on the Isle of Armor (made from 3 Max Mushrooms). Gigantamax ' + cur.name + ' also appears in some Max Raid dens; look for the red-and-purple beam.';
+        }
+        else if(wReg) tip = 'Showing where to find the ' + fName + '. Other forms are found elsewhere; switch form on the entry to see them.';
+        // Hisuian evolutions keep whatever ball the earlier stage was caught in:
+        // catch it in a modern game, move it to Legends: Arceus and evolve it there.
+        const EVOLVE_IN_HISUI = [157, 503, 724, 549, 628, 705, 706, 713, 899, 900, 901];
+        if(ball && ball !== 'Strange Ball' && (this.HISUI_BALLS || []).indexOf(ball) < 0 && EVOLVE_IN_HISUI.indexOf(cur.num) >= 0 && (wReg === 'Hisuian' || cur.num >= 899)){
+          const EF = window.EVO_FROM || {}, SW = ['S','H','I','J','K','L','Z'], found = [];
+          let n = cur.num, guard = 0;
+          while(EF[n] && guard++ < 4){ const pre = EF[n][0], pe = this.byNum(pre);
+            const gs = SW.filter(g=>(BG[g] || []).indexOf(ball) >= 0 && (this.encFor(pre, g) || []).some(r=>!fixed(r.method)));
+            if(gs.length) found.push((pe ? pe.name : '#' + pre) + ' (' + G.filter(x=>gs.indexOf(x.id) >= 0).map(x=>x.label).join(', ') + ')');
+            n = pre; }
+          if(found.length) tip = 'You can still get ' + (wReg ? 'a ' + fName : cur.name) + ' in ' + (/^[AEIOU]/.test(ball) ? 'an ' : 'a ') + ball + ': catch ' + found.join(' or ') + ' in ' + (/^[AEIOU]/.test(ball) ? 'an ' : 'a ') + ball + ', move it through HOME to Legends: Arceus and evolve it there. It keeps its ball; Legends: Arceus just shows it as a Strange Ball, and HOME shows the real one again.';
+        }
+        if(tip){}
+        else if(ball === 'Master Ball') tip = 'Master Balls are one per save in most games, so it’s usually best saved for a legendary or roamer.';
+        else if(ball === 'Beast Ball') tip = 'Beast Balls work on anything, but they’re weak on non-Ultra Beasts (0.1×), so expect to throw a few.';
+        else if(ball === 'Origin Ball') tip = 'The Origin Ball is only used for Arceus at the end of Legends: Arceus.';
+        else if(ball === 'Strange Ball') tip = 'Balls from Legends: Arceus show as a Strange Ball in other games; HOME and Legends: Arceus show the real Hisuian ball.';
+        else if((this.HISUI_BALLS || []).indexOf(ball) >= 0) tip = ball + ' is a Legends: Arceus ball. Other games show it as a Strange Ball.';
+        else if(ball === 'Dream Ball' && !games.length) tip = 'Dream Balls only catch wild Pokémon in Sun/Moon, Sword/Shield and Scarlet/Violet.';
+        const none = merged.length === 0;
+        const breedable = !/(Undiscovered)/i.test(cur.egg || '') && (window.LUX_EXEMPT_NUMS || []).indexOf(cur.num) < 0;
+        const wImg = this.srcFor(cur, 'main', wForm || 'Normal');
+        return {open: true, name: fName, img: this.imgOk(wImg) ? wImg : this.imgOk(this.srcFor(cur, 'main', 'Normal')) ? this.srcFor(cur, 'main', 'Normal') : 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==',
+          ball: ball, balls: [{id: '', label: 'Any ball'}].concat(this.BALLS.filter(b=>['Cherish Ball','Park Ball'].indexOf(b) < 0).map(b=>({id: b, label: b}))),
+          canAlpha: canAlpha, noAlpha: !canAlpha, alphaCls: 'btn ' + (alpha ? 'btn-primary' : 'btn-ghost'), alphaLabel: alpha ? 'Alpha ✓' : 'Alpha',
+          games: merged, none: none, hasTip: !!tip, tip: tip,
+          summary: none ? '' : merged.length + (merged.length === 1 ? ' game' : ' games') + ' · ' + merged.reduce((a, g)=>a + g.rows.length, 0) + ' places',
+          noneText: !rows.length ? cur.name + ' can’t be caught in the wild in the games the Encounters page covers. It may come from evolution, an event or a gift instead; check its evolution line and the Events page.'
+            : 'Nowhere in the wild ' + (alpha ? 'as an Alpha ' : '') + 'in ' + ballName + '.' + (breedable && ball && ball !== 'Master Ball' && ball !== 'Strange Ball' && (this.HISUI_BALLS || []).indexOf(ball) < 0 ? ' You can still get one in ' + (/^[AEIOU]/.test(ball) ? 'an ' : 'a ') + ball + ' by breeding: from Gen 6 on, the mother passes her ball on (from Gen 7, either parent with Ditto). Catch a parent in ' + (/^[AEIOU]/.test(ball) ? 'an ' : 'a ') + ball + ' first.' : '')};
+      })(),
+      onWtfOpen: () => this.setState({wtfOpen: true}),
+      onWtfClose: () => this.setState({wtfOpen: false}),
+      onWtfBall: e => this.setState({wtfBall: e.target.value}),
+      onWtfAlpha: () => this.setState({wtfAlpha: !st.wtfAlpha}),
+      onHuntOpen: () => { if(cur) this._huntK = this.formKey(cur.num, entry ? entry.formLabel : 'Normal'); this.setState({huntOpen: true}); },
       onHuntClose: () => this.setState({huntOpen: false}),
       onHuntCaught: () => { if(!cur) return; const k = this.formKey(cur.num, entry ? entry.formLabel : 'Normal');
         const n = ((s.shinyCount || {})[k] || {}).n || 0;
-        if(!(s.shinyCaught||{})[k]){ const sc = Object.assign({}, s.shinyCaught || {}); sc[k] = true; this.persist({shinyCaught: sc}); }
+        if(!(s.shinyCaught||{})[k]){ const sc = Object.assign({}, s.shinyCaught || {}); sc[k] = true;
+          const c0 = (s.shinyCount || {})[k] || {}, ms = (c0.ms || 0) + (this._huntT0 ? Date.now() - this._huntT0 : 0);
+          const log = (s.huntLog || []).concat([{k: k, n: c0.n || 0, how: c0.how || 'enc', odds: c0.odds || '', ms: ms, at: new Date().toISOString().slice(0, 10)}]);
+          this.persist({shinyCaught: sc, huntLog: log}); }
         this.setState({huntOpen: false});
         setTimeout(()=>this.milestone('Shiny ' + cur.name + '!', n ? 'Found after ' + n.toLocaleString() + ' ' + ((s.shinyCount||{})[k] || {how:'enc'}).how.replace('enc','encounters').replace('sr','soft resets').replace('egg','eggs').replace('raid','raids').replace('other','attempts') + '.' : 'Logged as caught.'), 700); },
       shinyHunt: (() => { if(!cur) return {};
@@ -6308,14 +6927,24 @@ class Component extends DCLogic {
         return o && o.name ? o.name + '\u0001' + (o.tid || '') : ''; })(),
       otTid: cur ? (((s.otOf||{})[otKeyNow]||{}).tid || '') : '',
       metVal: cur ? ((s.metOf||{})[otKeyNow] || '') : '',
+      metHint: (() => { if(!cur) return ''; const o = (s.otOf||{})[otKeyNow], mv = (s.metOf||{})[otKeyNow];
+        if(!o || !o.name) return '';
+        const bk = (s.otBook||[]).concat(s.otGifts||[]).filter(b=>b && b.name === o.name && String(b.tid || '') === String(o.tid || ''))[0];
+        if(!bk) return ''; const gm = this.otGameOf(bk);
+        if(!gm) return 'Give ' + o.name + ' a game in the OT address book (Trainer Card) and picking them will fill this in.';
+        const lab = (this.MET_GAMES().filter(g=>g.id === gm)[0] || {}).label || gm;
+        return mv === gm ? 'From ' + o.name + '’s trainer (' + lab + '). Change it if this one came from somewhere else.' : o.name + '’s trainer is set to ' + lab + '.'; })(),
       metOpts: this.MET_GAMES(),
       onMet: e => { if(!cur) return; const m = Object.assign({}, s.metOf||{});
         if(e.target.value) m[otKeyNow] = e.target.value; else delete m[otKeyNow];
         this.persist({metOf: m}); },
       otOpts: (() => {
-        const book = (s.otBook||[]).filter(o=>o && o.name);
+        const book = (s.otBook||[]).filter(o=>o && o.name), gifts = (s.otGifts||[]).filter(o=>o && o.name);
         const opts = book.map(o=>({id:o.name + '\u0001' + (o.tid || ''), name:o.name,
           label:o.name + (o.tid ? '  ·  ' + o.tid : '') + (o.note ? '  ·  ' + o.note : '')}));
+        // Gift / event OTs from the second book come after your own trainers.
+        gifts.forEach(o=>{ const id = o.name + '\u0001' + (o.tid || ''); if(opts.some(x=>x.id === id)) return;
+          opts.push({id:id, name:o.name, label:'Gift · ' + o.name + (o.tid ? '  ·  ' + o.tid : '') + (o.note ? '  ·  ' + o.note : '')}); });
         // Known event OTs for this species, so an event Pokémon's OT can be
         // recorded without adding it to your address book.
         if(cur){ const seenE = {};
@@ -6333,15 +6962,24 @@ class Component extends DCLogic {
         const name = cut >= 0 ? v.slice(0, cut) : v, tid = cut >= 0 ? v.slice(cut + 1) : '';
         const m = Object.assign({}, s.otOf||{});
         if(!name) delete m[k]; else m[k] = {name:name, tid:tid};
-        this.persist({otOf:m}); },
-      onOtTid: e => { if(!cur) return; const k = otKeyNow;
-        const m = Object.assign({}, s.otOf||{});
-        m[k] = Object.assign({name:''}, m[k], {tid: e.target.value});
-        this.persist({otOf:m}); },
+        // A trainer from your address book brings its game with it.
+        const bk = name ? (s.otBook||[]).concat(s.otGifts||[]).filter(o=>o && o.name === name && String(o.tid || '') === String(tid || ''))[0] : null, gm = this.otGameOf(bk);
+        if(gm){ const mt = Object.assign({}, s.metOf||{}); mt[k] = gm; this.persist({otOf:m, metOf:mt}); }
+        else this.persist({otOf:m}); },
+      onOtTid: e => { if(!cur) return; const k = otKeyNow, tid = e.target.value.trim();
+        const m = Object.assign({}, s.otOf||{}), was = m[k] || {};
+        // A TID from your address book fills in that trainer's name and game.
+        const book = (s.otBook||[]).concat(s.otGifts||[]).filter(o=>o && o.name && tid && String(o.tid || '').trim() === tid);
+        const bk = book.filter(o=>o.name === was.name)[0] || book[0];
+        m[k] = Object.assign({name:''}, was, {tid: tid}, bk ? {name: bk.name} : {});
+        const gm = this.otGameOf(bk);
+        if(gm){ const mt = Object.assign({}, s.metOf||{}); mt[k] = gm; this.persist({otOf:m, metOf:mt}); }
+        else this.persist({otOf:m}); },
       caughtCls: 'btn ' + (cur && (s.caught||{})[this.formKey(cur.num, entry ? entry.formLabel : 'Normal')] ? 'btn-primary' : 'btn-secondary'),
       caughtLabel: cur && (s.caught||{})[this.formKey(cur.num, entry ? entry.formLabel : 'Normal')] ? 'Caught ✓' : 'Mark caught',
       isCaughtForm: !!(cur && (s.caught||{})[this.formKey(cur.num, entry ? entry.formLabel : 'Normal')]),
       showAlpha: !!(cur && !(entry && entry.kind) && (window.ALPHA_SPECIES||[]).indexOf(cur.num) >= 0
+        && (!window.alphaFormOk || window.alphaFormOk(cur.num, entry ? entry.formLabel : 'Normal'))
         && (st.shinyMode ? (s.shinyCaught||{}) : (s.caught||{}))[otFk]),
       alphaIcon: cur && (s.alpha||{})[this.alphaKey(otFk, !!st.shinyMode)] ? 'images/ui/alpha.png' : 'images/ui/alpha-off.png',
       alphaBtnStyle: this.iconBtnStyle(!!(cur && (s.alpha||{})[this.alphaKey(otFk, !!st.shinyMode)])),
@@ -6406,21 +7044,28 @@ class Component extends DCLogic {
         H.register(hs0.events);
         const hs = s.honours || {}, got = hs.got || {}, feat = (hs.featured || []).filter(id=>got[id] && H.byId[id]);
         const fmt = d => { try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}); } catch(e){ return d; } };
-        const view = id => { const d = H.byId[id]; return {id: id, name: d.name, img: H.art(id)}; };
+        const view = id => { const d = H.byId[id]; return {id: id, name: d.name, img: H.art(id), b3dCls: d.kind === 'trophy' ? 'b3d-flat' : ''}; };
         const NOTES = {League: 'Champion of each region, from your Hall of Fame', Collection: 'For filling your Pokédex',
-          Shiny: 'For the sparkly ones', Quiz: 'Levels up with correct answers in the daily quiz',
+          Seasons: 'Do the daily quiz a few times during a season to earn that year’s badge', Shiny: 'For the sparkly ones', Quiz: 'Levels up with correct answers in the daily quiz', 'Gen quizzes': 'A perfect 10 in a generation quiz earns that gen’s badge', 'Dex numbers': 'Perfect tests in the Dex number trainer',
+          'Fan games': 'Beat a fan game: every badge ticked and a team registered in the Hall of Fame',
           Professor: 'Awarded by Professor Norgalidir with a code', Events: 'From the Professor’s events, only while they ran', Special: 'Rare ones'};
         const evIds = Object.keys(hs.events || {}).filter(id=>got[id] && H.byId[id]);
-        const groups = ['League', 'Collection', 'Shiny', 'Quiz', 'Professor', 'Events', 'Special'].filter(g=>g !== 'Events' || evIds.length).map(g=>({label: g === 'Professor' ? 'From the Professor' : g === 'Quiz' ? 'Daily quiz' : g, note: NOTES[g],
-          items: (g === 'Events' ? evIds.map(id=>H.byId[id]) : H.defs.filter(d=>d.group === g)).map(d=>{
+        const seaDefs = H.seasonBadges(((s.quiz || {}).days) || {});
+        // Earned ones, plus this season's while it's on (gone if missed).
+        const seaNow = (() => { const f = window.pkScreen && window.pkScreen.seasonFor, d = new Date(), id = f ? f(d) : '';
+          return id ? 'season-' + id + '-' + (id === 'newyear' && d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear()) : ''; })();
+        const seaIds = seaDefs.filter(d=>got[d.id] || d.id === seaNow).map(d=>d.id);
+        const fanList = H.fanDefs().concat(H.defs.filter(d=>d.group === 'Fan games'));
+        const groups = ['League', 'Fan games', 'Collection', 'Shiny', 'Quiz', 'Gen quizzes', 'Dex numbers', 'Seasons', 'Professor', 'Events', 'Special'].filter(g=>(g !== 'Events' || evIds.length) && (g !== 'Seasons' || seaIds.length)).map(g=>({label: g === 'Professor' ? 'From the Professor' : g === 'Quiz' ? 'Daily quiz' : g, note: NOTES[g],
+          items: (g === 'Events' ? evIds.map(id=>H.byId[id]) : g === 'Fan games' ? fanList : g === 'Seasons' ? seaIds.map(id=>H.byId[id]) : H.defs.filter(d=>d.group === g)).map(d=>{
             const rec = got[d.id], on = !!rec, star = feat.indexOf(d.id) >= 0;
             const lockedDesc = d.id === 'professor' ? 'Only the Professor has this one.' : d.id === 'assistant' && !FRIENDS ? 'Given to everyone who tested the friends’ copy during the beta.' : d.how === 'professor' ? d.desc + ' Show the Professor and he’ll send you a code.' : d.desc;
-            return {id: d.id, name: d.name, img: H.art(d.id), star: star, pressed: star ? 'true' : 'false',
+            return {id: d.id, name: d.name, img: H.art(d.id), star: star, pressed: star ? 'true' : 'false', b3dCls: d.kind === 'trophy' ? 'b3d-flat' : '',
               cls: 'pk-hon-slot ' + (on ? 'got' : 'locked') + (d.kind === 'trophy' ? ' trophy' : ''),
               title: on ? d.name + ' — ' + d.desc + ' Earned ' + fmt(rec.at) + (rec.by === 'professor' || rec.by === 'event' ? ', awarded by Professor Norgalidir' : '') + '. ' + (star ? 'Click to take it off show.' : 'Click to put it on show.')
                         : d.name + ' (not earned yet) — ' + lockedDesc};
           })}));
-        const nGot = H.defs.filter(d=>got[d.id]).length + evIds.length;
+        const nGot = H.defs.filter(d=>got[d.id]).length + evIds.length + seaIds.filter(id=>got[id]).length + fanList.filter(d=>d.group === 'Fan games' && got[d.id] && d.id !== 'fan-trophy').length;
         const evDraft = Object.assign({n: '', e: '', c: '#e07b22', g: 'star', s: 'coin'}, st.evDraft || {});
         // Daily quiz
         const Q = window.pkQuiz, qs = s.quiz || {}, qdays = qs.days || {}, qtoday = Q ? Q.today() : '', qrec = qdays[qtoday];
@@ -6431,26 +7076,77 @@ class Component extends DCLogic {
             const r = qdays[key]; if(!r || r.failed || r.status === 'started') break; streak++; d.setDate(d.getDate() - 1); } }
         const topTier = tiers.filter(t=>qtotal >= t.need).pop();
         const quiz = {
-          canPlay: !!Q && !qrec,
+          canPlay: !!Q && !qrec, canShare: !!qrec && !qrec.failed && qrec.status !== 'started',
           status: !qrec ? 'Today’s five questions are ready' : qrec.failed || qrec.status === 'started' ? 'Left early today — back tomorrow' : 'Done today: ' + qrec.n + ' / 5 — back tomorrow',
           img: H.art(topTier ? topTier.id : 'quiz-1'), imgFilter: topTier ? 'none' : 'grayscale(1) brightness(.5)',
           pct: nextT ? Math.round((qtotal - prevNeed) / (nextT.need - prevNeed) * 100) + '%' : '100%',
           progress: qtotal + ' correct in all' + (streak > 1 ? ' · ' + streak + '-day streak' : '') + (nextT ? ' · ' + (nextT.need - qtotal) + ' more for ' + nextT.name : ' · Pokémon Master!')
         };
+        // Square scorecard picture of a day's quiz, saved (and copied where allowed).
+        const shareQuiz = (day, n, marks) => { if(!window.pkCard) return;
+          const cs = getComputedStyle(document.documentElement), v = (k, d) => { const x = (cs.getPropertyValue(k) || '').trim(); return !x || /color-mix|var\(/.test(x) ? d : x; };
+          const acc = v('--color-accent', '#9184d9'), soft = /^#[0-9a-f]{6}$/i.test(acc) ? 'rgba(' + parseInt(acc.slice(1, 3), 16) + ',' + parseInt(acc.slice(3, 5), 16) + ',' + parseInt(acc.slice(5, 7), 16) + ',.30)' : 'rgba(145,132,217,.3)';
+          const cur = this.state.save || {}, qq = cur.quiz || {}, tot = qq.total || 0, top = tiers.filter(t=>tot >= t.need).pop();
+          let stk = 0; { const d = new Date(); for(let k = 0; k < 400; k++){ const key = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+            const r = (qq.days || {})[key]; if(!r || r.failed || r.status === 'started') break; stk++; d.setDate(d.getDate() - 1); } }
+          const data = {owner: this.ownerTitle(cur) + ' Pokédex', date: new Date(day + 'T12:00:00').toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
+            n: n, total: 5, marks: marks || [], streak: stk, rankName: top ? top.name : '', rankImg: H.art(top ? top.id : 'quiz-1'), allTime: tot,
+            footer: 'Personal Pokédex v' + APP_VERSION,
+            colors: {bg: v('--color-bg', '#161826'), surface: v('--color-surface', '#232532'), accent: acc, accent2: v('--color-accent-300', '#d2cefd'), accentSoft: soft,
+              text: v('--color-text', '#eee'), muted: v('--color-neutral-400', '#9a9aa6'), line: v('--color-divider', 'rgba(255,255,255,.14)')},
+            fonts: {head: v('--font-heading', 'sans-serif'), body: v('--font-body', 'sans-serif')}};
+          window.pkCard.renderQuiz(data).then(cv=>{ window.pkCard.copy(cv).then(()=>{});
+            return window.pkCard.save(cv, 'quiz-' + day + '.png'); }).then(ok=>this.flash(ok ? 'Scorecard saved (and copied, where allowed).' : 'Couldn’t make the scorecard.'), ()=>this.flash('Couldn’t make the scorecard.')); };
         const onQuizStart = () => { if(!Q) return; const day = Q.today();
           const upd = fn => { const cur = this.state.save || {}, q0 = cur.quiz || {}, d0 = Object.assign({}, q0.days || {}); fn(d0, q0); };
           Q.start({entries: list,
             sprite: num => { const e = this.byNum(num); return e ? this.srcFor(e, 'main', 'Normal') : ''; },
             onStart: () => upd((d0, q0) => { d0[day] = {status: 'started', n: 0}; this.persist({quiz: Object.assign({}, q0, {days: d0})}); }),
-            onFinish: r => upd((d0, q0) => { d0[day] = {n: r.correct, failed: r.failed};
+            share: r => shareQuiz(day, r.correct, r.marks),
+            onFinish: r => upd((d0, q0) => { d0[day] = {n: r.correct, failed: r.failed, marks: r.marks};
               this.persist({quiz: Object.assign({}, q0, {days: d0, total: (q0.total || 0) + r.correct})}); }),
             tier: extra => { const t2 = qtotal + extra, nt = tiers.filter(t=>t2 < t.need)[0];
               return t2 + ' correct in all.' + (nt ? ' ' + (nt.need - t2) + ' more for ' + nt.name + '.' : ' You’re a Pokémon Master.'); }});
         };
+        // Generation quizzes: replay any time, best score kept per gen.
+        const gq = s.genQuiz || {}, gqBest = gq.best || {};
+        const genQuiz = (Q && Q.gens ? Q.gens : []).map(g=>{ const b = gqBest[g.n], perfect = b >= 10;
+          return {n: String(g.n), roman: g.roman, best: b == null ? '–' : b + '/10',
+            title: 'Gen ' + g.roman + ' · ' + g.region + ' (#' + g.from + '–' + g.to + ')' + (b == null ? ' · not played yet' : ' · best ' + b + ' / 10') + (perfect ? ' · Scholar badge earned' : ''),
+            style: perfect ? 'border-color:var(--color-accent-500);color:var(--color-accent-300)' : ''}; });
+        const genPlays = gq.plays || 0, genPerfect = Object.keys(gqBest).filter(k=>gqBest[k] >= 10).length;
+        const onGenQuiz = e => { if(!Q) return; const g = +e.currentTarget.dataset.gen; if(!(g >= 1 && g <= 9)) return;
+          Q.start({entries: list, gen: g,
+            sprite: num => { const en = this.byNum(num); return en ? this.srcFor(en, 'main', 'Normal') : ''; },
+            onFinish: r => { const cur = this.state.save || {}, g0 = cur.genQuiz || {}, b0 = Object.assign({}, g0.best || {});
+              if(r.failed){ this.persist({genQuiz: Object.assign({}, g0, {plays: (g0.plays || 0) + 1})}); return; }
+              if(!(b0[g] >= r.correct)) b0[g] = r.correct;
+              const log = (g0.log || []).concat([{d: new Date().toISOString().slice(0, 10), g: g, n: r.correct}]).slice(-200);
+              this.persist({genQuiz: Object.assign({}, g0, {best: b0, plays: (g0.plays || 0) + 1, log: log})}); },
+            tier: n => { const b = gqBest[g] || 0;
+              return n >= 10 ? (b >= 10 ? 'Another perfect run.' : 'Gen ' + Q.gens[g - 1].roman + ' Scholar badge earned!') : n > b ? 'New best for Gen ' + Q.gens[g - 1].roman + '. A perfect 10 earns the Scholar badge.' : 'Your best is ' + b + ' / 10. A perfect 10 earns the Scholar badge.'; }});
+        };
+        // Dex number trainer
+        const dt = s.dexTrain || {};
+        const onDexNum = () => { const D = window.pkDexNum; if(!D) return;
+          const save = fn => { const cur = this.state.save || {}, d0 = cur.dexTrain || {}; this.persist({dexTrain: fn(d0)}); };
+          D.open({entries: list, miss: dt.miss || {}, best: dt.best || {},
+            sprite: num => { const en = this.byNum(num); return en ? this.srcFor(en, 'main', 'Normal') : ''; },
+            onAnswer: (n, ok) => save(d0 => { const m = Object.assign({}, d0.miss || {}); m[n] = Math.max(0, (m[n] || 0) + (ok ? -1 : 1)); if(!m[n]) delete m[n];
+              return Object.assign({}, d0, {miss: m, answered: (d0.answered || 0) + 1, right: (d0.right || 0) + (ok ? 1 : 0)}); }),
+            onFinish: r => save(d0 => { const b = Object.assign({}, d0.best || {}); if(!r.failed && !(b[r.key] >= r.correct)) b[r.key] = r.correct;
+              const log = r.failed ? (d0.log || []) : (d0.log || []).concat([{d: new Date().toISOString().slice(0, 10), k: r.key, n: r.correct}]).slice(-200);
+              return Object.assign({}, d0, {best: b, tests: (d0.tests || 0) + 1, log: log}); })});
+        };
+        const dtMiss = Object.keys(dt.miss || {}).length;
+        const dexNumNote = dt.answered ? dt.right + ' / ' + dt.answered + ' right in practice' + (dtMiss ? ' · ' + dtMiss + ' to revisit' : '') : 'Easy: pick the Pokémon · Hard: type the number';
         const grant = st.grant || null;
         return {
+          onDexNum: onDexNum, dexNumNote: dexNumNote,
+          genQuiz: genQuiz, onGenQuiz: onGenQuiz, genQuizNote: genPerfect + ' of 9 Scholar badges' + (genPlays ? ' · ' + genPlays + (genPlays === 1 ? ' play' : ' plays') : ''),
           quiz: quiz, onQuizStart: onQuizStart,
-          hon: {count: nGot + ' of ' + (H.defs.length + evIds.length) + ' earned', groups: groups,
+          onQuizShare: () => { if(qrec && !qrec.failed && qrec.status !== 'started') shareQuiz(qtoday, qrec.n, qrec.marks); },
+          hon: {count: nGot + ' of ' + (H.defs.length + evIds.length + seaIds.length + fanList.length - 1) + ' earned', groups: groups,
             featured: feat.map(view), hasFeatured: feat.length > 0, noFeatured: feat.length === 0,
             featuredHint: nGot ? 'Click any honour you’ve earned to put it on show here and on your menu. Up to three.' : 'Nothing earned yet. Catch, hunt and finish games and they’ll start turning up.'},
           menuHon: feat.map(view), hasMenuHon: feat.length > 0,
@@ -6470,6 +7166,10 @@ class Component extends DCLogic {
           grantKind: st.grantKind || H.grantable[0], grantIsEvent: st.grantKind === '__event',
           onGrantKind: e => this.setState({grantKind: e.target.value, grant: null}),
           ev: evDraft, evPreview: H.art('preview', H.eventDef(evDraft)), evGlyphs: H.eventGlyphs, evShapes: H.eventShapes,
+          evPresets: Object.keys((window.pkScreen && window.pkScreen.seasons) || {}).map(id=>({id: id, label: window.pkScreen.seasons[id].name})),
+          onEvPreset: e => { const id = e.currentTarget.dataset.p, S = (window.pkScreen.seasons || {})[id]; if(!S) return;
+            const d = new Date(), yr = id === 'newyear' && d.getMonth() === 11 ? d.getFullYear() + 1 : d.getFullYear();
+            this.setState({evDraft: {n: S.badge.n, e: S.name + ' ' + yr, c: S.badge.c, g: S.badge.g, s: S.badge.s}, grant: null}); },
           onEvField: e => { const k = e.currentTarget.dataset.ev; this.setState({evDraft: Object.assign({}, evDraft, {[k]: e.target.value}), grant: null}); },
           onGrant: e => { e.preventDefault(); const f = e.currentTarget, id = st.grantKind || H.grantable[0], who = (f.who.value || '').trim();
             if(!who){ this.flash('Type your friend’s name exactly as they set it in their app.'); return; }
@@ -6485,6 +7185,223 @@ class Component extends DCLogic {
           onCopyGrant: () => { if(grant && navigator.clipboard) navigator.clipboard.writeText(grant.code).then(()=>this.flash('Code copied.'), ()=>{}); },
           onSelectAll: e => e.target.select()
         };
+      })(),
+      ...(() => {
+        const H = window.pkHonours, PC = window.pkChallenge, out = {};
+        const nameOf = n => { const e = this.byNum(n); return e ? e.name : '#' + n; };
+        const BLANK = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+        const okImg = src => src && this.imgOk(src) ? src : BLANK;
+        const imgOf = (n, kind) => { const e = this.byNum(n); return e ? okImg(this.srcFor(e, kind || 'main', 'Normal')) : BLANK; };
+        // ---- Shareable Trainer Card
+        const cardData = () => {
+          const cs = getComputedStyle(document.documentElement), v = (k, d) => (cs.getPropertyValue(k) || '').trim() || d;
+          const plain = (c, d) => /color-mix|var\(/.test(c) ? d : c;
+          const accent = plain(v('--color-accent', '#9184d9'), '#9184d9');
+          const soft = /^#[0-9a-f]{6}$/i.test(accent) ? 'rgba(' + parseInt(accent.slice(1, 3), 16) + ',' + parseInt(accent.slice(3, 5), 16) + ',' + parseInt(accent.slice(5, 7), 16) + ',.28)' : 'rgba(145,132,217,.28)';
+          const hs = s.honours || {}, got = hs.got || {}, feat = (hs.featured || []).filter(id=>got[id] && H && H.byId[id]);
+          const qtotal = (s.quiz || {}).total || 0, tiers = H ? H.defs.filter(d=>d.group === 'Quiz') : [], top = tiers.filter(t=>qtotal >= t.need).pop();
+          const team = this.teamsOf()[this.teamIdx()];
+          const line = [s.trainerName ? 'OT ' + s.trainerName : '', s.trainerTid ? 'ID ' + s.trainerTid : '', s.trainerHome || ''].filter(Boolean).join('  ·  ');
+          return {
+            title: this.ownerTitle(s) + ' Pokédex', line: line || 'Pokémon Trainer',
+            stats: [{label:'Pokédex', value: Math.round(caughtN / Math.max(1, list.length) * 100) + '%'},
+              {label:'Shinies', value: String(shinyN)},
+              {label:'Living forms', value: Math.round(formN / Math.max(1, formT) * 100) + '%'},
+              {label:'Honours', value: String(H ? H.defs.filter(d=>got[d.id]).length + Object.keys(hs.events || {}).length : 0)}],
+            honours: feat.map(id=>({img: H.art(id), name: H.byId[id].name})),
+            quiz: top ? top.name + ' · ' + qtotal + ' correct' : (qtotal ? qtotal + ' correct' : ''),
+            team: team.slots.map(sl=>{ const e = sl ? this.byNum(sl.num) : null; return e ? this.srcFor(e, 'main', sl.form || 'Normal') : ''; }),
+            teamLabel: (team.name || 'Team').toUpperCase(),
+            portrait: (s.images || {})['trainer:portrait'] || '',
+            footer: 'Personal Pokédex v' + APP_VERSION + '  ·  ' + new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}),
+            colors: {bg: plain(v('--color-bg', '#161826'), '#161826'), surface: plain(v('--color-surface', '#232532'), '#232532'),
+              card: plain(v('--color-neutral-900', '#1b1d2a'), '#1b1d2a'), accent: accent, accent2: plain(v('--color-accent-300', '#d2cefd'), '#d2cefd'),
+              accentSoft: soft, text: plain(v('--color-text', '#eeeeee'), '#eeeeee'), muted: plain(v('--color-neutral-400', '#9a9aa6'), '#9a9aa6'),
+              line: plain(v('--color-divider', 'rgba(255,255,255,.14)'), 'rgba(255,255,255,.14)')},
+            fonts: {head: v('--font-heading', 'sans-serif'), body: v('--font-body', 'sans-serif')}
+          };
+        };
+        const cardName = () => (String(s.ownerName || s.trainerName || 'my').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-trainer-card.png');
+        out.onCardSave = () => { if(!window.pkCard) return;
+          window.pkCard.render(cardData()).then(cv=>window.pkCard.save(cv, cardName())).then(ok=>this.flash(ok ? 'Card picture saved.' : 'Couldn’t make the picture.'), ()=>this.flash('Couldn’t make the picture.')); };
+        out.onCardCopy = () => { if(!window.pkCard) return;
+          window.pkCard.render(cardData()).then(cv=>window.pkCard.copy(cv)).then(ok=>this.flash(ok ? 'Card picture copied: paste it into a chat.' : 'Copying isn’t allowed here. Use Save card picture.'), ()=>this.flash('Couldn’t make the picture.')); };
+
+        // ---- Shiny hunts log
+        if(st.view === 'trainer'){
+          const ODDS = {f8:8192, f4:4096, c:1365, m:683, mc:512, r:200, sos:273, dm:300, dmc:100, svo:512, sv3:1024};
+          const HOW = {enc:'encounters', sr:'soft resets', egg:'eggs', raid:'raids', other:'attempts'};
+          const dur = ms => { const m = Math.round((ms || 0) / 60000); return m < 1 ? '' : m < 60 ? m + ' min' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm'; };
+          const keyInfo = k => { const p = String(k).split(':'), e = this.byNum(+p[0]); if(!e) return null;
+            const form = p[1] ? (this.formsFor(e).filter(f=>this.slug(f) === p[1])[0] || 'Normal') : 'Normal';
+            return {e, form, name: e.name + (form !== 'Normal' ? ' (' + this.formLabelFor(e.num, form, this.formsFor(e)) + ')' : ''), img: okImg(this.srcFor(e, 'shiny', form))}; };
+          const counts = s.shinyCount || {}, sc = s.shinyCaught || {};
+          const active = Object.keys(counts).filter(k=>(counts[k] || {}).n > 0 && !sc[k]).map(k=>{ const i = keyInfo(k); if(!i) return null; const c = counts[k];
+            const p = ODDS[c.odds || '']; return {k, name: i.name, img: i.img,
+              sub: c.n.toLocaleString() + ' ' + (HOW[c.how || 'enc'] || 'tries') + (p ? ' · ' + (c.n / p < .1 ? (c.n / p).toFixed(2) : (c.n / p).toFixed(1)) + '× odds' : '') + (c.ms ? ' · ' + dur(c.ms) : '')}; }).filter(Boolean)
+            .sort((a, b)=>(counts[b.k].n || 0) - (counts[a.k].n || 0));
+          const logged = {}; (s.huntLog || []).forEach(h=>{ logged[h.k] = h; });
+          // Older finds from before the log: caught shinies that had a count.
+          Object.keys(counts).forEach(k=>{ if(sc[k] && !logged[k] && (counts[k] || {}).n > 0) logged[k] = {k, n: counts[k].n, how: counts[k].how, odds: counts[k].odds, ms: counts[k].ms, at: ''}; });
+          const done = Object.keys(logged).map(k=>{ const h = logged[k], i = keyInfo(k); if(!i) return null; const p = ODDS[h.odds || ''];
+            return {k, at: h.at || '', name: i.name, img: i.img,
+              sub: (h.n || 0).toLocaleString() + ' ' + (HOW[h.how || 'enc'] || 'tries') + (p ? ' · 1/' + p.toLocaleString() : '') + (h.ms ? ' · ' + dur(h.ms) : '') + (h.at ? ' · ' + h.at : '')}; })
+            .filter(Boolean).sort((a, b)=>String(b.at).localeCompare(String(a.at)));
+          out.hunts = {active, done, hasActive: active.length > 0, hasDone: done.length > 0, none: !active.length && !done.length,
+            summary: active.length + ' going · ' + done.length + ' found'};
+        } else out.hunts = {active: [], done: []};
+        out.onHuntResume = e => { const k = e.currentTarget.dataset.k, p = String(k).split(':'), en = this.byNum(+p[0]); if(!en) return;
+          const form = p[1] ? (this.formsFor(en).filter(f=>this.slug(f) === p[1])[0] || 'Normal') : 'Normal';
+          this._huntK = k; this.setState({current: en.num, form: form, view: 'dex', huntOpen: true, edit: false}); };
+
+        // ---- Compare with a friend
+        if(this._cmpTried !== true){ this._cmpTried = true; try { const c = JSON.parse(localStorage.getItem('pokedex-compare') || 'null'); if(c) setTimeout(()=>this.setState({cmp: c}), 0); } catch(e){} }
+        const C = st.cmp;
+        out.onCmpLoad = () => { const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json,.json';
+          inp.onchange = () => { const f = inp.files[0]; if(!f) return; const r = new FileReader();
+            r.onload = () => { try { const d = JSON.parse(r.result);
+              if(!d || typeof d !== 'object' || !(d.caught || d.shinyCaught)) throw new Error('not a backup');
+              const pickT = o => { const x = {}; Object.keys(o || {}).forEach(k=>{ if(o[k]) x[k] = 1; }); return x; };
+              const c = {name: d.ownerName || d.trainerName || f.name.replace(/\.json$/i, ''), caught: pickT(d.caught), shiny: pickT(d.shinyCaught),
+                honours: {got: Object.keys(((d.honours || {}).got) || {}), events: (d.honours || {}).events || {}},
+                quiz: ((d.quiz || {}).total) || 0, gifts: Object.keys(pickT(d.gifts)).length, loaded: new Date().toISOString().slice(0, 10)};
+              try { localStorage.setItem('pokedex-compare', JSON.stringify(c)); } catch(e){}
+              this.setState({cmp: c, cmpTab: 'they'}); this.flash('Loaded ' + c.name + '’s Pokédex.');
+            } catch(err){ this.flash('That file isn’t a Pokédex backup.'); } };
+            r.readAsText(f); };
+          inp.click(); };
+        out.onCmpClear = () => { try { localStorage.removeItem('pokedex-compare'); } catch(e){} this.setState({cmp: null}); };
+        out.onCmpTab = e => this.setState({cmpTab: e.currentTarget.dataset.t});
+        out.onCmpOpen = e => this.setState({current: +e.currentTarget.dataset.n, form: 'Normal', view: 'dex', edit: false});
+        if(C && st.view === 'trainer'){
+          const sp = o => { const m = {}; Object.keys(o || {}).forEach(k=>{ if(o[k]) m[String(k).split(':')[0]] = 1; }); return m; };
+          const myC = sp(s.caught), myS = sp(s.shinyCaught), thC = sp(C.caught), thS = sp(C.shiny);
+          const who = String(C.name || 'Friend'), short = who.length > 10 ? who.slice(0, 9) + '…' : who;
+          const tab = st.cmpTab || 'they';
+          const pickList = tab === 'they' ? Object.keys(thC).filter(n=>!myC[n]) : tab === 'you' ? Object.keys(myC).filter(n=>!thC[n])
+            : tab === 'sthey' ? Object.keys(thS).filter(n=>!myS[n]) : Object.keys(myS).filter(n=>!thS[n]);
+          const nums = pickList.map(Number).filter(n=>this.byNum(n)).sort((a, b)=>a - b);
+          const mineGot = H ? ((s.honours || {}).got || {}) : {};
+          if(H) H.register(C.honours.events || {});
+          const theirHon = H ? (C.honours.got || []).filter(id=>H.byId[id]) : [];
+          out.cmp = {has: true, short, loadLabel: 'Load another',
+            rows: [{label: 'Species caught', you: Object.keys(myC).length, them: Object.keys(thC).length},
+              {label: 'Shiny species', you: Object.keys(myS).length, them: Object.keys(thS).length},
+              {label: 'Honours', you: Object.keys(mineGot).length, them: theirHon.length},
+              {label: 'Quiz answers', you: (s.quiz || {}).total || 0, them: C.quiz || 0}],
+            hon: theirHon.map(id=>({img: H.art(id), name: H.byId[id].name})), hasHon: theirHon.length > 0, honLabel: who + '’s honours',
+            tabs: [['they', who + ' has, you don’t'], ['you', 'You have, ' + who + ' doesn’t'], ['sthey', 'Shinies they have'], ['syou', 'Shinies you have']]
+              .map(t=>({id: t[0], label: t[1], cls: 'btn ' + (t[0] === tab ? 'btn-primary' : 'btn-ghost')})),
+            list: nums.slice(0, 150).map(n=>({num: n, label: this.pad(n) + ' ' + nameOf(n)})),
+            listNote: nums.length ? nums.length + ' species' + (nums.length > 150 ? ' (first 150 shown)' : '') + '. Click one to open its entry.' : 'Nothing here: you match on these.'};
+        } else out.cmp = {has: false, loadLabel: 'Load a friend’s backup', rows: [], list: [], tabs: [], hon: []};
+
+
+        // ---- Journal
+        if(st.view === 'journal'){
+          const filt = st.jrFilter || 'all', days = {};
+          const add = (date, it) => { const d = String(date || '').slice(0, 10); if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return; (days[d] = days[d] || []).push(it); };
+          const keyName = k => { const p = String(k).split(':'), e = this.byNum(+p[0]); if(!e) return null;
+            const form = p[1] ? (this.formsFor(e).filter(f=>this.slug(f) === p[1])[0] || 'Normal') : 'Normal';
+            return {e, form, name: e.name + (form !== 'Normal' ? ' (' + this.formLabelFor(e.num, form, this.formsFor(e)) + ')' : '')}; };
+          const HOW = {enc:'encounters', sr:'soft resets', egg:'eggs', raid:'raids', other:'tries'};
+          const logBy = {}; (s.huntLog || []).forEach(h=>{ logBy[h.k] = h; });
+          if(filt === 'all' || filt === 'caught'){
+            const byDay = {};
+            Object.keys(s.caughtAt || {}).forEach(k=>{ if(!(s.caught || {})[k]) return; const d = String(s.caughtAt[k]).slice(0, 10); (byDay[d] = byDay[d] || []).push(k); });
+            Object.keys(byDay).forEach(d=>{ const ks = byDay[d].map(keyName).filter(Boolean);
+              if(ks.length <= 5) ks.forEach(i=>add(d, {tag:'Caught', text:'Caught ' + i.name, img: okImg(this.srcFor(i.e, 'main', i.form))}));
+              else add(d, {tag:'Caught', text:'Caught ' + ks.length + ' Pokémon', mini: ks.slice(0, 24).map(i=>({name: i.name, img: okImg(this.srcFor(i.e, 'main', i.form))})),
+                sub: ks.length > 24 ? 'and ' + (ks.length - 24) + ' more' : '', img: okImg(this.srcFor(ks[0].e, 'main', ks[0].form))}); });
+          }
+          if(filt === 'all' || filt === 'shiny')
+            Object.keys(s.shinyAt || {}).forEach(k=>{ if(!(s.shinyCaught || {})[k]) return; const i = keyName(k); if(!i) return; const h = logBy[k];
+              add(s.shinyAt[k], {tag:'Shiny', text:'✦ Shiny ' + i.name, sub: h && h.n ? 'after ' + h.n.toLocaleString() + ' ' + (HOW[h.how] || 'tries') : '', img: okImg(this.srcFor(i.e, 'shiny', i.form))}); });
+          if((filt === 'all' || filt === 'honours') && H){
+            const hs = s.honours || {}; H.register(hs.events || {});
+            Object.keys(hs.got || {}).forEach(id=>{ const d = H.byId[id], r = hs.got[id]; if(!d) return;
+              add(r.at, {tag: d.kind === 'trophy' ? 'Trophy' : 'Honour', text:'Earned ' + d.name, sub: d.desc, img: H.art(id)}); });
+          }
+          if(filt === 'all' || filt === 'runs'){
+            const games = PC ? PC.games() : [], gn = id => (games.filter(g=>g.id === id)[0] || {name: id}).name, ch = s.challenge || {};
+            (ch.history || []).forEach(r=>{ add(r.started, {tag:'Run', text:'Started a ' + r.levelLabel + ' run of ' + gn(r.game), sub: r.rules.map(x=>x.text).join(', '), img: imgOf(r.starter)});
+              add(r.ended, {tag:'Run', text: (r.result === 'won' ? '🏆 Beat ' : 'Gave up on ') + 'the ' + gn(r.game) + ' challenge', sub: (r.badges || 0) + ' badges', img: imgOf(r.starter)}); });
+            if(ch.active) add(ch.active.started, {tag:'Run', text:'Started a ' + ch.active.levelLabel + ' run of ' + gn(ch.active.game), sub: ch.active.rules.map(x=>x.text).join(', '), img: imgOf(ch.active.starter)});
+          }
+          if((filt === 'all' || filt === 'quiz') && H){
+            const qd = (s.quiz || {}).days || {};
+            Object.keys(qd).forEach(d=>{ const r = qd[d]; const left = r.failed || r.status === 'started';
+              add(d, {tag:'Quiz', text: left ? 'Left the daily quiz early' : r.n === 5 ? 'Perfect daily quiz: 5 / 5' : 'Daily quiz: ' + r.n + ' / 5', img: H.art('quiz-1')}); });
+            // Dex number trainer tests: the day's best per range and level.
+            const dbest = {};
+            ((s.dexTrain || {}).log || []).forEach(x=>{ const k = x.d + '|' + x.k; if(!(dbest[k] >= x.n)) dbest[k] = x.n; });
+            Object.keys(dbest).forEach(k=>{ const [d, rg, lv] = k.split('|'), n = dbest[k], rl = rg === 'all' ? 'all numbers' : 'Gen ' + ['I','II','III','IV','V','VI','VII','VIII','IX'][rg - 1];
+              add(d, {tag:'Quiz', text: 'Dex number test (' + (lv === 'hard' ? 'Hard' : 'Easy') + ', ' + rl + '): ' + n + ' / 20', img: H.art(lv === 'hard' ? 'dn-hard' : 'dn-easy')}); });
+            // Generation quizzes: the day's best go per gen.
+            const RN = ['I','II','III','IV','V','VI','VII','VIII','IX'], gbest = {};
+            ((s.genQuiz || {}).log || []).forEach(x=>{ const k = x.d + '|' + x.g; if(!(gbest[k] >= x.n)) gbest[k] = x.n; });
+            Object.keys(gbest).forEach(k=>{ const [d, g] = k.split('|'), n = gbest[k];
+              add(d, {tag:'Quiz', text: n >= 10 ? 'Perfect Gen ' + RN[g - 1] + ' quiz: 10 / 10' : 'Gen ' + RN[g - 1] + ' quiz: best ' + n + ' / 10', img: H.art('gq-' + g)}); });
+          }
+          const keys = Object.keys(days).sort().reverse(), shown = keys.slice(0, st.jrDays || 21);
+          const fmt = d => { try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long', year:'numeric'}); } catch(e){ return d; } };
+          out.jr = {filters: [['all','Everything'],['caught','Catches'],['shiny','Shinies'],['honours','Honours'],['runs','Runs'],['quiz','Quiz']]
+              .map(f=>({id: f[0], label: f[1], cls: 'btn ' + (f[0] === filt ? 'btn-primary' : 'btn-ghost')})),
+            days: shown.map(d=>({label: fmt(d), items: days[d].map(it=>Object.assign({sub: '', mini: []}, it, {hasSub: !!it.sub, hasMini: !!(it.mini && it.mini.length)}))})),
+            more: keys.length > shown.length, empty: !keys.length,
+            emptyText: 'Nothing here yet. Catches are dated from v2.28 on, so ticking things off from now fills this in.',
+            summary: keys.length ? keys.length + (keys.length === 1 ? ' day' : ' days') + ' · since ' + fmt(keys[keys.length - 1]).replace(/^\w+, /, '') : ''};
+        } else out.jr = {filters: [], days: []};
+        out.onJrFilter = e => this.setState({jrFilter: e.currentTarget.dataset.f, jrDays: 21});
+        out.onJrMore = () => this.setState({jrDays: (st.jrDays || 21) + 30});
+        // ---- Challenge runs
+        if(PC && st.view === 'challenge'){
+          const ch = s.challenge || {}, games = PC.games(), A = ch.active;
+          const gameName = id => (games.filter(g=>g.id === id)[0] || {name: id}).name;
+          const game = st.chGame || ch.lastGame || 'sv', level = st.chLevel !== undefined ? st.chLevel : (ch.lastLevel !== undefined ? ch.lastLevel : 1);
+          const D = st.chDraft;
+          const NOTES = ['Two easy-going rules. Good for a relaxed replay.', 'Four rules that change how you play.', 'Six rules, two of them a Nuzlocke. Good luck.'];
+          out.ch = {hasActive: !!A, noActive: !A, games: games, game: game,
+            levels: PC.levels.map(l=>({id: l.id, label: l.label, cls: 'btn ' + (l.id === level ? 'btn-primary' : 'btn-ghost')})),
+            levelNote: NOTES[level], rollLabel: D ? 'Roll again' : 'Roll a challenge',
+            hasDraft: !!D && !A, ask: !!st.chQuitAsk, notAsk: !st.chQuitAsk,
+            d: D ? {hasStarter: !!D.starter, starterImg: imgOf(D.starter), starterName: D.starter ? nameOf(D.starter) : '',
+              rules: D.rules.map((r, i)=>({i, text: r.text, detail: r.detail}))} : {rules: []},
+            a: A ? (() => { const total = (games.filter(g=>g.id === A.game)[0] || {badges: 8}).badges || 8;
+              return {gameName: gameName(A.game), levelLabel: A.levelLabel, hasStarter: !!A.starter, starterImg: imgOf(A.starter),
+                sub: (A.starter ? 'Starter: ' + nameOf(A.starter) + ' · ' : '') + 'started ' + A.started,
+                rules: A.rules, notes: A.notes || '', badgeText: (A.badges || 0) + ' of ' + total,
+                pips: Array.from({length: total}, (x, i)=>({i, n: i + 1, pressed: i < (A.badges || 0) ? 'true' : 'false',
+                  bg: i < (A.badges || 0) ? 'var(--color-accent)' : 'transparent', title: 'Badge ' + (i + 1)}))}; })() : {rules: [], pips: []},
+            history: (ch.history || []).slice().reverse().slice(0, 12).map(h=>({icon: h.result === 'won' ? '🏆' : '✕',
+              title: gameName(h.game) + ' · ' + h.levelLabel + (h.result === 'won' ? ' · beaten' : ' · given up'),
+              sub: (h.starter ? nameOf(h.starter) + ' · ' : '') + h.rules.map(r=>r.text).join(', ') + ' · ' + h.started + ' → ' + h.ended})),
+            hasHistory: (ch.history || []).length > 0};
+        } else out.ch = {games: [], levels: [], d: {rules: []}, a: {rules: [], pips: []}, history: []};
+        const saveCh = patch => { const ch = Object.assign({}, (this.state.save || {}).challenge || {}, patch); this.persist({challenge: ch}); };
+        out.onChGame = e => this.setState({chGame: e.target.value, chDraft: null});
+        out.onChLevel = e => this.setState({chLevel: +e.currentTarget.dataset.l, chDraft: null});
+        out.onChRoll = () => { if(!PC) return; const ch = s.challenge || {};
+          const game = st.chGame || ch.lastGame || 'sv', level = st.chLevel !== undefined ? st.chLevel : (ch.lastLevel !== undefined ? ch.lastLevel : 1);
+          this.setState({chDraft: PC.roll(game, level)}); };
+        out.onChReroll = e => { if(st.chDraft) this.setState({chDraft: PC.reroll(st.chDraft, +e.currentTarget.dataset.i)}); };
+        out.onChStarter = () => { const D = st.chDraft; if(!D) return; const r = PC.roll(D.game, D.level); if(r.starter) this.setState({chDraft: Object.assign({}, D, {starter: r.starter})}); };
+        out.onChStart = () => { const D = st.chDraft; if(!D) return;
+          saveCh({active: Object.assign({}, D, {started: new Date().toISOString().slice(0, 10), badges: 0, notes: ''}), lastGame: D.game, lastLevel: D.level});
+          this.setState({chDraft: null}); };
+        out.onChBadge = e => { const A = ((this.state.save || {}).challenge || {}).active; if(!A) return; const i = +e.currentTarget.dataset.i;
+          saveCh({active: Object.assign({}, A, {badges: (A.badges || 0) === i + 1 ? i : i + 1})}); };
+        out.onChNotes = e => { const A = ((this.state.save || {}).challenge || {}).active; if(A) saveCh({active: Object.assign({}, A, {notes: e.target.value})}); };
+        const endRun = result => { const ch = (this.state.save || {}).challenge || {}, A = ch.active; if(!A) return;
+          saveCh({active: null, history: (ch.history || []).concat([Object.assign({}, A, {result, ended: new Date().toISOString().slice(0, 10)})])});
+          this.setState({chQuitAsk: false}); return A; };
+        out.onChWon = () => { const A = endRun('won'); if(A) setTimeout(()=>this.milestone('Challenge beaten!', 'Show Professor Norgalidir your run for the Challenge Runner badge.'), 300); };
+        out.onChQuitAsk = () => this.setState({chQuitAsk: true});
+        out.onChQuitNo = () => this.setState({chQuitAsk: false});
+        out.onChQuit = () => { endRun('quit'); this.flash('Run ended. Roll another whenever you like.'); };
+        out.onChCopy = () => { const A = ((this.state.save || {}).challenge || {}).active; if(!A || !PC) return;
+          const t = PC.text(A, nameOf); if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>this.flash('Rules copied.'), ()=>this.flash('Couldn’t copy here.')); };
+        return out;
       })(),
       ownerTitle: this.ownerTitle(s),
       ownerNameVal: s.ownerName || '',
@@ -6546,7 +7463,7 @@ class Component extends DCLogic {
       openSettingsFromInfo: () => this.setState({infoOpen:false, settings:true}),
       statsOpen: !!st.statsOpen, infoOpen: !!st.infoOpen,
       statsOpenStr: st.statsOpen ? 'true' : 'false', infoOpenStr: st.infoOpen ? 'true' : 'false',
-      appVersion: 'Version ' + APP_VERSION + ' · 9 Nov 2026',
+      appVersion: 'Version ' + APP_VERSION + ' · 15 Nov 2026',
       musicCls: 'btn ' + ((window.pkSound && window.pkSound.musicOn()) ? 'btn-primary' : 'btn-ghost'),
       musicLabel: 'Music: ' + ((window.pkSound && window.pkSound.musicOn()) ? 'on' : 'off'),
       musicVol: window.pkSound && window.pkSound.musicVolume ? window.pkSound.musicVolume() : 70,
@@ -6770,6 +7687,12 @@ class Component extends DCLogic {
         const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
         inp.onchange = () => { if(inp.files[0]) this.readFileTo(inp.files[0], k); };
         inp.click(); },
+      ...(() => { const P = window.PokedexAndroid; if(!P) return {isPhone: false};
+        let n = 0, v = ''; try { n = P.spriteCount(); v = P.version(); } catch(e){}
+        return {isPhone: true,
+          phoneInfo: 'Version ' + String(v).replace(/\.0$/, '') + ' · ' + (n ? n.toLocaleString('en-GB') + ' sprite pictures on this phone' : 'no sprites on this phone yet'),
+          onPhoneSprites: () => { try { P.importSprites(); } catch(e){} },
+          onPhoneUpdate: () => { try { P.checkForUpdate(); this.flash('Checking GitHub for a newer version…'); } catch(e){} }}; })(),
       onExport: () => {
         const now = new Date();
         const out = Object.assign({}, this.state.save, {lastExport: now.toISOString(),

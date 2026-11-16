@@ -1,7 +1,7 @@
 // Personal Pokédex — designed and built by GK, 2026.
 // Offline support for the Pokédex. Bump VERSION after changing any file so
 // phones pick up the new copy on their next online visit.
-const VERSION = 'pokedex-v64';
+const VERSION = 'pokedex-v83';
 const CORE = [
   "./",
   "./index.html",
@@ -15,6 +15,8 @@ const CORE = [
   "./pokedex-intro.js",
   "./pokedex-honours.js",
   "./pokedex-quiz.js",
+  "./pokedex-dexnum.js",
+  "./pokedex-extras.js",
   "./_ds/nocturne-7fd53eca-b1c1-42d1-a568-1ba247596b3b/styles.css",
   "./_ds/nocturne-7fd53eca-b1c1-42d1-a568-1ba247596b3b/_ds_bundle.js",
   "./pokedex-abilities.js",

@@ -90,26 +90,27 @@ Lumiose City|Z|static|717:::Z:Story or side mission
 Lumiose City|Z|static|718:::Z:Story or side mission
 Lumiose City|Z|static|719:::Z:Story or side mission
 Lumiose City|Z|static|150:::Z:Story or side mission
-Lumiose City|Z|static|485:::Z:Story or side mission
-Lumiose City|Z|static|721:::Z:Story or side mission
-Lumiose City|Z|static|638:::Z:Story or side mission
-Lumiose City|Z|static|639:::Z:Story or side mission
-Lumiose City|Z|static|640:::Z:Story or side mission
-Lumiose City|Z|static|647:::Z:Story or side mission
-Lumiose City|Z|static|648:::Z:Story or side mission
-Lumiose City|Z|static|649:::Z:Story or side mission
-Lumiose City|Z|static|720:::Z:Story or side mission
-Lumiose City|Z|static|802:::Z:Story or side mission
-Lumiose City|Z|static|808:::Z:Story or side mission
-Lumiose City|Z|static|809:::Z:Story or side mission
-Lumiose City|Z|static|491:::Z:Story or side mission
-Lumiose City|Z|static|380:::Z:Story or side mission
-Lumiose City|Z|static|381:::Z:Story or side mission
-Lumiose City|Z|static|382:::Z:Story or side mission
-Lumiose City|Z|static|383:::Z:Story or side mission
-Lumiose City|Z|static|384:::Z:Story or side mission
-Lumiose City|Z|static|801:::Z:Story or side mission
-Lumiose City|Z|static|807:::Z:Story or side mission
+Hyperspace Lumiose|Z|static|485:::Z:Mega Dimension story — make a 3★ or 4★ Donut to reach Hyperspace Lumiose and battle it
+Lumiose City|Z|static|721:::Z:Mega Dimension Side Mission 194 at Mable’s lab
+Hyperspace Lumiose|Z|static|638:::Z:Mega Dimension — Special Scan after the DLC story (random portal)
+Hyperspace Lumiose|Z|static|639:::Z:Mega Dimension — Special Scan after the DLC story (random portal)
+Hyperspace Lumiose|Z|static|640:::Z:Mega Dimension — Special Scan after the DLC story (random portal)
+Hyperspace Lumiose|Z|static|647:::Z:Mega Dimension — Special Scan after the DLC story (needs 25000 Hyperspace Survey Points; random portal; in the sewer area near the middle); shiny-locked
+Hyperspace Lumiose|Z|static|648:::Z:Mega Dimension — Special Scan after the DLC story (random portal); shiny-locked
+Lumiose City|Z|static|649:::Z:Mega Dimension Side Mission 191 — buy the four Drives from the shady TM vendor
+Hyperspace Lumiose|Z|static|720:::Z:Mega Dimension Side Mission 196 at Hotel Z — defeat Hoopa Unbound in Hyperspace Lumiose
+Lumiose City|Z|static|802:::Z:Mega Dimension Side Mission 192 — battle courtyard near Wild Zone 20 at dusk on a sunny day
+Lumiose City|Z|static|808:::Z:Mega Dimension Side Mission 193 (Rouge Sector 1)
+Hyperspace Lumiose|Z|static|809:::Z:Mega Dimension — after catching Meltan (Side Mission 193), in its Hyperspace area
+Hyperspace Lumiose|Z|static|491:::Z:Mega Dimension story — Bad Dreams Cruller Donut unlocks the Mega Darkrai battle
+Hyperspace Lumiose|Z|static|380:::Z:Mega Dimension — Special Scan after the DLC story (random portal)
+Hyperspace Lumiose|Z|static|381:::Z:Mega Dimension — Special Scan after the DLC story (random portal)
+Hyperspace Lumiose|Z|static|382:::Z:Mega Dimension story — Alpha Old-Fashioned Donut unlocks the Primal Kyogre battle
+Hyperspace Lumiose|Z|static|383:::Z:Mega Dimension story — Omega Old-Fashioned Donut unlocks the Primal Groudon battle
+Hyperspace Lumiose|Z|static|384:::Z:Mega Dimension story — Delta Old-Fashioned Donut unlocks the Mega Rayquaza battle
+Lumiose City|Z|gift|801:::Z:Mega Dimension Side Mission 195 — collect 999 Mega Shards for Jett at Quasartico
+Lumiose City|Z|static|807:::Z:Mega Dimension Side Mission EX3 — after the Canari Bread / Plazma-Glazed Donut chain
+Lumiose City|Z|gift|670:72::Z:Eternal Flower Floette (AZ’s Floette) — from your rival after the 15th Reward Match of the Infinite Z-A Royale; OT AZ · ID 000001
 Lumiose City|Z|gift|152:::Z:Chikorita — starter choice,498:::Z:Tepig — starter choice,158:::Z:Totodile — starter choice
 `
 });

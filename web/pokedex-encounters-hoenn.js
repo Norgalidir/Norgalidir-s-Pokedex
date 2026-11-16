@@ -201,6 +201,9 @@ Petalburg City|rse|good-rod|341:10-30:20
 Route 124|rse|special|369:30-35::|Diving in the deep water
 Route 126|rse|special|369:30-35::|Diving in the deep water
 Route 128|rse|super-rod|222:30-35:20
+Lilycove City|rse|super-rod|120:25-30:20
+Route 124|rse|special|366:20-35::,170:20-30::|Diving in the deep water
+Route 126|rse|special|366:20-35::,170:20-30::|Diving in the deep water
 Desert Underpass|e|cave|132:38-45:35
 Battle Frontier|e|static|185:40::|Blocking the path in the Battle Frontier
 `;

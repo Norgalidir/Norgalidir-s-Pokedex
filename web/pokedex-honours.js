@@ -73,6 +73,10 @@
     desc:'Catch 50 shiny Pokémon.'});
   add({id:'shiny-100', group:'Shiny', kind:'badge', how:'auto', name:'Shiny Master', shape:'rosette', glyph:'sparkle', color:'#b8336a',
     desc:'Catch 100 shiny Pokémon.'});
+  add({id:'hunt-marathon', group:'Shiny', kind:'badge', how:'auto', name:'Marathon Hunter', shape:'hex', glyph:'bolt', color:'#3f8fcf',
+    desc:'Find a shiny in hunt mode after 4,096 or more tries.'});
+  add({id:'hunt-lucky', group:'Shiny', kind:'badge', how:'auto', name:'Lucky Find', shape:'coin', glyph:'star', color:'#3fb37f',
+    desc:'Find a shiny in hunt mode in under a tenth of the odds you set.'});
   add({id:'shiny-dex', group:'Shiny', kind:'trophy', how:'auto', name:'Radiant Pokédex', tier:'platinum', glyph:'sparkle', plaque:'SHINY DEX',
     desc:'Catch a shiny of every species that can be shiny.'});
   // Awarded by the Professor
@@ -93,6 +97,22 @@
       label:i === 4 ? 'MASTER' : null, need:t[0],
       desc:'Answer ' + t[0] + ' daily quiz questions correctly.' + (i === 4 ? ' The top rank.' : '')});
   });
+  // Generation quizzes: a perfect 10 on a gen's quiz earns its badge.
+  ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'].forEach(function(rn, i){ var r = REGIONS[i];
+    add({id:'gq-' + (i + 1), group:'Gen quizzes', kind:'badge', how:'auto', name:'Gen ' + rn + ' Scholar', shape:'shield', glyph:'book', color:r[1],
+      label:r[0].toUpperCase(), gen:i + 1, desc:'Score a perfect 10 in the Generation ' + rn + ' quiz (' + r[0] + ').'});
+  });
+  add({id:'gq-all', group:'Gen quizzes', kind:'trophy', how:'auto', name:'Regional Historian', tier:'gold', glyph:'book', plaque:'9 GENS',
+    desc:'Earn all nine Gen Scholar badges.'});
+  // Dex number trainer tests
+  add({id:'dn-easy', group:'Dex numbers', kind:'badge', how:'auto', name:'Number Spotter', shape:'coin', glyph:'hash', color:'#3fa7a0',
+    desc:'Score 20 / 20 in an Easy test in the Dex number trainer.'});
+  add({id:'dn-hard', group:'Dex numbers', kind:'badge', how:'auto', name:'Number Cruncher', shape:'hex', glyph:'hash', color:'#d0602f',
+    desc:'Score 20 / 20 in a Hard test (type the number) in the Dex number trainer.'});
+  add({id:'dn-all', group:'Dex numbers', kind:'trophy', how:'auto', name:'Walking Pokédex', tier:'platinum', glyph:'hash', plaque:'#1–#1025',
+    desc:'Score 20 / 20 in a Hard test across all 1025 numbers.'});
+  add({id:'fan-trophy', group:'Fan games', kind:'trophy', how:'auto', name:'Fan Favourite', tier:'gold', glyph:'star', plaque:'3 FAN GAMES',
+    desc:'Beat three fan games.'});
   // Special
   add({id:'professor', group:'Special', kind:'badge', how:'special', name:'Pokémon Professor', shape:'wing', glyph:'book', color:'#5b4bd6', label:'NORGALIDIR',
     desc:'The maker of this Pokédex.'});
@@ -125,6 +145,7 @@
   SHAPES.coin = 'M50 4 A46 46 0 1 1 49.9 4 Z';
   // Glyphs drawn on a 100x100 grid around the middle, filled.
   var GLYPHS = {
+    hash: 'M39 26 H47 L41 74 H33 Z M59 26 H67 L61 74 H53 Z M27 39 H75 V47 H27 Z M25 55 H73 V63 H25 Z',
     crown: 'M28 64 L24 38 L38 48 L50 30 L62 48 L76 38 L72 64 Z M28 68 H72 V74 H28 Z',
     star: 'M50 27 L56.5 43 L73 44 L60 54.5 L64.5 71 L50 61.5 L35.5 71 L40 54.5 L27 44 L43.5 43 Z',
     sparkle: 'M50 24 C52 42 58 48 76 50 C58 52 52 58 50 76 C48 58 42 52 24 50 C42 48 48 42 50 24 Z M70 26 C71 31 72 32 77 33 C72 34 71 35 70 40 C69 35 68 34 63 33 C68 32 69 31 70 26 Z',
@@ -141,23 +162,29 @@
     brain: 'M50 28 C44 22 32 24 31 34 C24 36 22 46 27 51 C23 57 27 67 35 67 C37 74 46 76 50 70 C54 76 63 74 65 67 C73 67 77 57 73 51 C78 46 76 36 69 34 C68 24 56 22 50 28 Z M50 30 V70',
     flask: 'M43 26 H57 V30 H55 V44 L72 70 A4 4 0 0 1 68 76 H32 A4 4 0 0 1 28 70 L45 44 V30 H43 Z'
   };
+  function xesc(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
   function badgeSVG(d){
     var c = d.color, hi = mix(c, '#ffffff', .45), lo = mix(c, '#000000', .45), rim = mix(c, '#ffffff', .75);
     var shape = SHAPES[d.shape] || SHAPES.hex;
     var glyph = GLYPHS[d.glyph] || GLYPHS.star;
     var outlineGlyph = d.glyph === 'leaf' || d.glyph === 'book' || d.glyph === 'brain';
     var label = d.label ? '<path d="M14 80 H86 L82 92 H18 Z" fill="' + lo + '" stroke="' + rim + '" stroke-width="1.5"/>' +
-      '<text x="50" y="89.2" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="' + (d.label.length > 8 ? 6.2 : 8) + '" font-weight="700" letter-spacing="1" fill="' + rim + '">' + d.label + '</text>' : '';
+      '<text x="50" y="89.2" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="' + (d.label.length > 8 ? 6.2 : 8) + '" font-weight="700" letter-spacing="1" fill="' + rim + '">' + xesc(d.label) + '</text>' : '';
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
       '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + hi + '"/><stop offset=".55" stop-color="' + c + '"/><stop offset="1" stop-color="' + lo + '"/></linearGradient>' +
       '<linearGradient id="s" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient>' +
       '<clipPath id="k"><path d="' + shape + '"/></clipPath></defs>' +
       '<path d="' + shape + '" fill="' + lo + '" transform="translate(0 2.5)" opacity=".55"/>' +
       '<path d="' + shape + '" fill="url(#g)" stroke="' + rim + '" stroke-width="3"/>' +
+      '<linearGradient id="bv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></linearGradient>' +
       '<g clip-path="url(#k)"><path d="' + shape + '" fill="none" stroke="' + lo + '" stroke-width="10" opacity=".35" transform="translate(50 50) scale(.84) translate(-50 -50)"/>' +
+      // a bevelled inner rim: lit top-left, shaded bottom-right
+      '<path d="' + shape + '" fill="none" stroke="url(#bv)" stroke-width="5" transform="translate(50 50) scale(.9) translate(-50 -50)"/>' +
       '<path d="M0 0 H100 V44 Q50 56 0 40 Z" fill="url(#s)"/></g>' +
       '<g transform="translate(50 ' + (d.label ? 46 : 50) + ') scale(' + (d.label ? .78 : .9) + ') translate(-50 -50)">' +
       '<path fill-rule="evenodd" d="' + glyph + '" fill="' + (outlineGlyph ? 'none' : lo) + '" stroke="' + lo + '" stroke-width="' + (outlineGlyph ? 5 : 0) + '" stroke-linejoin="round" transform="translate(0 2)" opacity=".5"/>' +
+      // embossed: a bright edge up-left, then the face
+      '<path fill-rule="evenodd" d="' + glyph + '" fill="' + (outlineGlyph ? 'none' : '#ffffff') + '" stroke="#ffffff" stroke-width="' + (outlineGlyph ? 5 : 0) + '" stroke-linejoin="round" transform="translate(-.9 -.9)" opacity=".55"/>' +
       '<path fill-rule="evenodd" d="' + glyph + '" fill="' + (outlineGlyph ? 'none' : rim) + '" stroke="' + rim + '" stroke-width="' + (outlineGlyph ? 5 : 0) + '" stroke-linejoin="round" stroke-linecap="round"/></g>' +
       label + '</svg>';
   }
@@ -178,13 +205,53 @@
       // plinth and plaque
       '<rect x="24" y="74" width="52" height="20" rx="2" fill="url(#w)"/>' +
       '<rect x="31" y="78.5" width="38" height="11" rx="1.5" fill="url(#m)"/>' +
-      '<text x="50" y="86.6" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="' + (d.plaque.length > 6 ? 4.4 : 7) + '" font-weight="700" letter-spacing="' + (d.plaque.length > 6 ? .2 : .6) + '" fill="' + lo + '">' + d.plaque + '</text>' +
+      '<text x="50" y="86.6" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif" font-size="' + (d.plaque.length > 6 ? 4.4 : 7) + '" font-weight="700" letter-spacing="' + (d.plaque.length > 6 ? .2 : .6) + '" fill="' + lo + '">' + xesc(d.plaque) + '</text>' +
+      '</svg>';
+  }
+  // The maker's badge: a gold-rimmed medal with a laurel wreath, a deep
+  // violet enamel centre, three set gems, an open book in gold and an
+  // engraved ribbon.
+  function professorSVG(){
+    var leaves = '', i;
+    for(i = 0; i < 9; i++){ var a = (200 + i * 15) * Math.PI / 180, x = 50 + 41 * Math.cos(a), y = 52 + 41 * Math.sin(a), r = (200 + i * 15) + 90;
+      leaves += '<ellipse cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="3.2" ry="7" fill="url(#lf)" transform="rotate(' + (r + 25) + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
+      var x2 = 100 - x; leaves += '<ellipse cx="' + x2.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="3.2" ry="7" fill="url(#lf)" transform="rotate(' + (-(r + 25)) + ' ' + x2.toFixed(1) + ' ' + y.toFixed(1) + ')"/>'; }
+    var rays = ''; for(i = 0; i < 24; i++){ rays += '<path d="M50 50 L' + (50 + 48 * Math.cos(i * Math.PI / 12 - .06)).toFixed(1) + ' ' + (50 + 48 * Math.sin(i * Math.PI / 12 - .06)).toFixed(1) + ' L' + (50 + 48 * Math.cos(i * Math.PI / 12 + .06)).toFixed(1) + ' ' + (50 + 48 * Math.sin(i * Math.PI / 12 + .06)).toFixed(1) + 'Z" fill="#fff4c2" opacity="' + (i % 2 ? .10 : .22) + '"/>'; }
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs>' +
+      '<linearGradient id="au" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff6c8"/><stop offset=".3" stop-color="#f0c54a"/><stop offset=".55" stop-color="#b98316"/><stop offset=".8" stop-color="#f7d873"/><stop offset="1" stop-color="#8a5a00"/></linearGradient>' +
+      '<linearGradient id="au2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7a4d00"/><stop offset=".5" stop-color="#e9b93a"/><stop offset="1" stop-color="#fff1b0"/></linearGradient>' +
+      '<radialGradient id="en" cx=".4" cy=".35" r=".75"><stop offset="0" stop-color="#8e6cff"/><stop offset=".55" stop-color="#4a26b8"/><stop offset="1" stop-color="#1c0b52"/></radialGradient>' +
+      '<linearGradient id="lf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0a8"/><stop offset="1" stop-color="#b3820f"/></linearGradient>' +
+      '<radialGradient id="gm" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#ff7aa8"/><stop offset="1" stop-color="#8a0f3c"/></radialGradient>' +
+      '<radialGradient id="gm2" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".25" stop-color="#7ae0ff"/><stop offset="1" stop-color="#0f4f8a"/></radialGradient>' +
+      '<linearGradient id="sh" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".65"/><stop offset=".4" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>' +
+      rays +
+      leaves +
+      '<circle cx="50" cy="51" r="34" fill="#5a3a00" opacity=".55"/>' +
+      '<circle cx="50" cy="49" r="34" fill="url(#au)"/>' +
+      '<circle cx="50" cy="49" r="34" fill="none" stroke="#fff3b8" stroke-width="1" opacity=".8"/>' +
+      '<circle cx="50" cy="49" r="29.5" fill="url(#au2)"/>' +
+      // beaded ring
+      (function(){ var b = ''; for(var k = 0; k < 32; k++){ var t = k * Math.PI / 16; b += '<circle cx="' + (50 + 31.7 * Math.cos(t)).toFixed(1) + '" cy="' + (49 + 31.7 * Math.sin(t)).toFixed(1) + '" r="1" fill="#fff6c8" opacity=".85"/>'; } return b; })() +
+      '<circle cx="50" cy="49" r="26" fill="url(#en)" stroke="#6b4300" stroke-width="1.2"/>' +
+      '<path d="M50 23 A26 26 0 0 1 76 49 L24 49 A26 26 0 0 1 50 23Z" fill="url(#sh)" opacity=".35"/>' +
+      // book
+      '<g transform="translate(50 46)"><path d="M0 -6 C-6 -11 -14 -11 -20 -9 V11 C-14 9 -6 9 0 14 C6 9 14 9 20 11 V-9 C14 -11 6 -11 0 -6Z" fill="url(#au)" stroke="#6b4300" stroke-width=".8"/>' +
+      '<path d="M0 -6 V14" stroke="#6b4300" stroke-width="1"/><path d="M-16 -4 Q-9 -6 -3 -3 M-16 0 Q-9 -2 -3 1 M-16 4 Q-9 2 -3 5 M16 -4 Q9 -6 3 -3 M16 0 Q9 -2 3 1 M16 4 Q9 2 3 5" stroke="#8a5a00" stroke-width=".8" fill="none" opacity=".8"/></g>' +
+      // three set gems
+      '<circle cx="50" cy="20" r="4.2" fill="url(#gm)" stroke="#fff3b8" stroke-width="1.2"/>' +
+      '<circle cx="23" cy="56" r="3" fill="url(#gm2)" stroke="#fff3b8" stroke-width="1"/><circle cx="77" cy="56" r="3" fill="url(#gm2)" stroke="#fff3b8" stroke-width="1"/>' +
+      // ribbon
+      '<path d="M10 72 L22 70 L20 78 L24 86 L12 84 Z" fill="#3a1a8a"/><path d="M90 72 L78 70 L80 78 L76 86 L88 84 Z" fill="#3a1a8a"/>' +
+      '<path d="M18 70 Q50 78 82 70 L82 82 Q50 90 18 82 Z" fill="#5b2fd0" stroke="url(#au)" stroke-width="1.6"/>' +
+      '<text x="50" y="80.8" text-anchor="middle" font-family="Georgia,Times New Roman,serif" font-size="6.6" font-weight="700" letter-spacing="1.4" fill="#ffe9a0">NORGALIDIR</text>' +
       '</svg>';
   }
   var artCache = {};
   function art(id, def){
     if(artCache[id] && !def) return artCache[id];
     var d = def || BY[id]; if(!d) return '';
+    if(id === 'professor') return (artCache[id] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(professorSVG()));
     if(def) return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(d.kind === 'trophy' ? trophySVG(d) : badgeSVG(d));
     var svg = d.kind === 'trophy' ? trophySVG(d) : badgeSVG(d);
     return (artCache[id] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
@@ -195,7 +262,7 @@
   //         alphaN, giftN, ribN, gmaxN, gmaxT, hof, friends, version}
   function championRegions(hof){
     var out = {};
-    (window.HOF_GENS || []).forEach(function(g){ (g.games || []).forEach(function(m){
+    (window.HOF_GENS || []).forEach(function(g){ if(g.fan) return; (g.games || []).forEach(function(m){
       var rec = (hof || {})[m.id] || {}, team = (rec.team || []).filter(function(x){ return x && String(x).trim(); });
       var badges = m.badges || [], got = rec.badges || {};
       var all = badges.every(function(b, i){ return got[i] || got[String(i)]; });
@@ -225,10 +292,21 @@
     if(S.shinyN >= 50) met.push('shiny-50');
     if(S.shinyN >= 100) met.push('shiny-100');
     if(S.shinySpeciesT && S.shinyBaseN >= S.shinySpeciesT) met.push('shiny-dex');
+    var ODDS = {f8:8192, f4:4096, c:1365, m:683, mc:512, r:200, sos:273, dm:300, dmc:100, svo:512, sv3:1024};
+    (S.hunts || []).some(function(h){ return (h.n || 0) >= 4096; }) && met.push('hunt-marathon');
+    (S.hunts || []).some(function(h){ var p = ODDS[h.odds || '']; return p && h.n > 0 && h.n <= p / 10; }) && met.push('hunt-lucky');
     if(!S.friends) met.push('professor');
     if(S.friends && S.version < BETA_UNTIL) met.push('assistant');
     D.forEach(function(d){ if(d.group === 'Quiz' && (S.quizCorrect || 0) >= d.need) met.push(d.id); });
-    return met;
+    var db = S.dexBest || {};
+    Object.keys(db).forEach(function(k){ if(db[k] >= 20){ var lv = k.split('|')[1]; met.push(lv === 'hard' ? 'dn-hard' : 'dn-easy'); if(k === 'all|hard') met.push('dn-all'); } });
+    var gb = S.genBest || {}, gn = 0;
+    for(var g = 1; g <= 9; g++) if((gb[g] || 0) >= 10){ met.push('gq-' + g); gn++; }
+    if(gn === 9) met.push('gq-all');
+    seasonBadges(S.quizDays).forEach(function(d){ if(d.count >= d.need) met.push(d.id); });
+    fanDefs(); var fb = fanBeaten(S.hof); fb.forEach(function(id){ met.push('fan-' + id); });
+    if(fb.length >= 3) met.push('fan-trophy');
+    return met.filter(function(id, i){ return met.indexOf(id) === i; });
   }
 
   // ---- Professor codes ---------------------------------------------------
@@ -255,6 +333,64 @@
     return String(code || '').toUpperCase().replace(/O/g, '0').replace(/[IL]/g, '1').replace(/[^0-9A-Z]/g, '');
   }
   var GRANTABLE = D.filter(function(d){ return d.how === 'professor'; }).map(function(d){ return d.id; }).concat(['assistant']);
+  // ---- Fan games -----------------------------------------------------------
+  // One badge per fan game (built in or added in the Hall of Fame), earned the
+  // same way as a region Champion: every badge ticked and a team registered.
+  var FAN_COLORS = ['#c23a3a','#3c7fd0','#2f9b62','#8a46c9','#d98a1c','#2fa3c9','#cf3a5a'];
+  function fanDefs(){
+    var gen = (window.HOF_GENS || []).filter(function(g){ return g.fan; })[0], list = [];
+    ((gen && gen.games) || []).forEach(function(m, i){
+      var short = String(m.name).toUpperCase(); if(short.length > 12) short = short.split(' ')[0].slice(0, 12);
+      var d = {id:'fan-' + m.id, group:'Fan games', kind:'badge', how:'auto', name:m.name + ' Champion', game:m.id,
+        shape: m.kaizo ? 'rosette' : 'wing', glyph: m.kaizo ? 'fang' : 'crown', color: m.kaizo ? '#7a1020' : FAN_COLORS[i % FAN_COLORS.length], label: m.kaizo ? 'KAIZO' : short,
+        desc:'Tick every badge for ' + m.name + ' in the Hall of Fame and register your team.' + (m.kaizo ? ' Respect.' : '')};
+      BY[d.id] = d; list.push(d);
+    });
+    return list;
+  }
+  function fanBeaten(hof){
+    var gen = (window.HOF_GENS || []).filter(function(g){ return g.fan; })[0], out = [];
+    ((gen && gen.games) || []).forEach(function(m){
+      var rec = (hof || {})[m.id] || {}, team = (rec.team || []).filter(function(x){ return x && String(x).trim(); });
+      var got = rec.badges || {}, all = (m.badges || []).every(function(b, i){ return got[i] || got[String(i)]; });
+      if(team.length && all) out.push(m.id);
+    });
+    return out;
+  }
+
+  // ---- Season badges ------------------------------------------------------
+  // Finish the daily quiz on a few days during a season to earn that year's
+  // badge (Winter 2026, Halloween 2027 …). Only during the season itself.
+  var SEASON_BADGE = {
+    halloween:   {name:'Halloween', glyph:'fang', shape:'shield', color:'#e07b22', need:3},
+    winter:      {name:'Winter', glyph:'sparkle', shape:'rosette', color:'#4aa8d8', need:3},
+    newyear:     {name:'New Year', glyph:'star', shape:'coin', color:'#d4a017', need:2},
+    anniversary: {name:'Anniversary', glyph:'heart', shape:'wing', color:'#cf3a5a', need:1}
+  };
+  function seasonOf(dateStr){
+    var f = window.pkScreen && window.pkScreen.seasonFor; if(!f) return null;
+    var d = new Date(dateStr + 'T12:00:00'), id = f(d); if(!id) return null;
+    var yr = d.getFullYear(); if(id === 'newyear' && d.getMonth() === 11) yr += 1;
+    return {id:id, year:yr};
+  }
+  function seasonDef(id, year){
+    var b = SEASON_BADGE[id]; if(!b) return null;
+    return {id:'season-' + id + '-' + year, group:'Seasons', kind:'badge', how:'auto', name:b.name + ' ' + year,
+      shape:b.shape, glyph:b.glyph, color:b.color, label:String(year), need:b.need,
+      desc:'Finish the daily quiz on ' + b.need + (b.need === 1 ? ' day' : ' days') + ' during ' + b.name + ' ' + year + '.'};
+  }
+  // Season badges earned from quiz days, plus the one running now (to show).
+  function seasonBadges(quizDays){
+    var counts = {}, out = {};
+    Object.keys(quizDays || {}).forEach(function(d){ var r = quizDays[d]; if(!r || r.failed || r.status === 'started') return;
+      var s = seasonOf(d); if(!s) return; var k = s.id + '-' + s.year; counts[k] = (counts[k] || 0) + 1; });
+    var now = seasonOf(new Date().toISOString().slice(0, 10)), list = [];
+    Object.keys(counts).concat(now ? [now.id + '-' + now.year] : []).forEach(function(k){
+      if(out[k]) return; var p = k.split('-'), def = seasonDef(p[0], +p[1]); if(!def) return;
+      def.count = counts[k] || 0; out[k] = def; BY[def.id] = def; list.push(def); });
+    return list;
+  }
+
   // ---- Event badges -----------------------------------------------------
   // The badge's design travels inside the code, so a new event needs no
   // update: EV-<design>-<check>. The check ties it to the person's name.
@@ -305,7 +441,9 @@
     '  box-shadow:0 20px 60px rgba(0,0,0,.5);text-align:center;font-family:var(--font-body,inherit)}',
     '#pk-hon .h-kicker{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-accent-300,#cbb)}',
     '#pk-hon .h-art{position:relative;width:168px;height:168px;margin:14px auto 10px;perspective:600px}',
-    '#pk-hon .h-art img{width:100%;height:100%;display:block;animation:pkHonSpin 1.1s cubic-bezier(.2,.9,.25,1.15) both;filter:drop-shadow(0 10px 18px rgba(0,0,0,.45))}',
+    '#pk-hon .h-art .b3d{--s:168px;filter:drop-shadow(0 12px 20px rgba(0,0,0,.45))}',
+    '#pk-hon .h-art .b3d-in{animation:pkHonSpin3 1.5s cubic-bezier(.2,.9,.25,1.05) both}',
+    '@keyframes pkHonSpin3{0%{transform:scale(.2) rotateY(-900deg) rotateX(20deg);opacity:0}25%{opacity:1}100%{transform:scale(1) rotateY(-14deg) rotateX(6deg)}}',
     '#pk-hon .h-glow{position:absolute;inset:-30px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--color-accent,#9184d9) 45%,transparent),transparent 65%);animation:pkHonGlow 2.4s ease-in-out infinite}',
     '#pk-hon .h-shine{position:absolute;inset:0;overflow:hidden;pointer-events:none;-webkit-mask:var(--m) center/contain no-repeat;mask:var(--m) center/contain no-repeat}',
     '#pk-hon .h-shine::after{content:"";position:absolute;top:-20%;bottom:-20%;width:40%;left:-60%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:pkHonShine 1.1s .9s ease-out both}',
@@ -326,6 +464,12 @@
   ].join('\n');
   var queue = [], showing = false;
   function blocked(){ return document.getElementById('pk-intro') || document.getElementById('pk-name'); }
+  // A solid 3D medal: the art stacked with darker layers behind it for an edge.
+  function medal(src, flat){
+    var L = '<img class="bk" alt="" src="' + src + '">';
+    [5, 4, 3, 2, 1].forEach(function(k){ L += '<img class="e' + k + '" alt="" src="' + src + '">'; });
+    return '<span class="b3d' + (flat ? ' b3d-flat' : '') + '"><span class="b3d-in">' + L + '<img class="f" alt="" src="' + src + '"></span></span>';
+  }
   function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function sound(){ try { if(window.pkSound) window.pkSound.fx('honour'); } catch(e){} }
   function close(el){ el.remove(); showing = false; setTimeout(next, 250); }
@@ -350,7 +494,7 @@
       var sparks = ''; for(var i = 0; i < 10; i++){ var a = i / 10 * Math.PI * 2, r = 95 + (i % 3) * 18;
         sparks += '<span class="h-spark" style="--x:' + Math.round(Math.cos(a) * r) + 'px;--y:' + Math.round(Math.sin(a) * r) + 'px;animation-delay:' + (700 + i * 30) + 'ms"></span>'; }
       el.innerHTML = '<div class="h-card"><div class="h-kicker">' + (d.kind === 'trophy' ? 'Trophy earned' : d.how === 'event' ? esc(d.event || 'Event') + ' \u00b7 event badge' : 'Badge earned') + '</div>' +
-        '<div class="h-art"><div class="h-glow"></div><img alt="" src="' + art(item.id) + '"><div class="h-shine" style="--m:url(\'' + art(item.id) + '\')"></div>' + sparks + '</div>' +
+        '<div class="h-art"><div class="h-glow"></div>' + medal(art(item.id), d.kind === 'trophy') + '<div class="h-shine" style="--m:url(\'' + art(item.id) + '\')"></div>' + sparks + '</div>' +
         '<div class="h-name">' + esc(d.name) + '</div><div class="h-desc">' + esc(d.desc) + '</div>' +
         (item.by === 'professor' || item.by === 'event' ? '<div class="h-by">Awarded by Professor Norgalidir</div>' : '') +
         '<div class="h-btns"><button type="button" class="btn btn-primary" data-act="close">' + (queue.length ? 'Next' : 'Nice!') + '</button>' +
@@ -374,6 +518,6 @@
   }
 
   window.pkHonours = { defs: D, byId: BY, art: art, check: check, codeFor: codeFor, redeem: redeem,
-    eventCode: eventCode, eventDef: eventDef, register: register, eventGlyphs: EVENT_GLYPHS, eventShapes: EVENT_SHAPES,
-    grantable: GRANTABLE, celebrate: celebrate, regions: REGIONS };
+    seasonBadges: seasonBadges, fanDefs: fanDefs, eventCode: eventCode, eventDef: eventDef, register: register, eventGlyphs: EVENT_GLYPHS, eventShapes: EVENT_SHAPES,
+    grantable: GRANTABLE, celebrate: celebrate, regions: REGIONS, medal: medal };
 })();

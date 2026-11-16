@@ -6,6 +6,7 @@
 // the remakes in places.
 window.ENCOUNTERS_MORE = Object.assign(window.ENCOUNTERS_MORE || {}, {
   bdsp: `
+Great Marsh Area 1|IJ|walk|455:25-27:5:IJ:Daily rotating Great Marsh spawns
 Turnback Cave|IJ|static|487:70::IJ:Giratina — after getting the National Dex
 Ramanas Park|IJ|static|144:70::IJ:Ramanas Park, with its Slate,145:70::IJ:Ramanas Park, with its Slate,146:70::IJ:Ramanas Park, with its Slate,150:70::IJ:Ramanas Park, with its Slate,243:70::IJ:Ramanas Park, with its Slate,244:70::IJ:Ramanas Park, with its Slate,245:70::IJ:Ramanas Park, with its Slate,250:70::I:Ramanas Park, with its Slate — Brilliant Diamond only,249:70::J:Ramanas Park, with its Slate — Shining Pearl only,381:70::I:Ramanas Park, with its Slate — Brilliant Diamond only,380:70::J:Ramanas Park, with its Slate — Shining Pearl only,383:70::I:Ramanas Park, with its Slate — Brilliant Diamond only,382:70::J:Ramanas Park, with its Slate — Shining Pearl only,384:70::IJ:Ramanas Park, with its Slate,377:70::IJ:Ramanas Park, with its Slate,378:70::IJ:Ramanas Park, with its Slate,379:70::IJ:Ramanas Park, with its Slate
 Canalave City|IJ|surf|72:20-30:60:IJ:,73:20-40:5:IJ:,278:20-30:30:IJ:,279:20-40:5:IJ:

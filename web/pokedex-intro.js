@@ -197,6 +197,8 @@
     '  font-family:"Inter",system-ui,sans-serif;transition:opacity .45s ease}',
     '#pk-intro .i-view{position:absolute;inset:0;perspective:calc(var(--u)*170);perspective-origin:50% 35%;opacity:0;animation:pkiFade .5s ease forwards}',
     '#pk-intro *{box-sizing:border-box}',
+    '#pk-intro.i-spooky .i-glow{animation:pkiFade 1.2s .2s ease forwards,pkiSpook 2.6s 1.4s ease-in-out infinite}',
+    '@keyframes pkiSpook{0%,100%{filter:brightness(1)}40%{filter:brightness(1.5)}55%{filter:brightness(.8)}}',
     '#pk-intro .i-glow{position:absolute;left:50%;top:50%;width:calc(var(--u)*130);height:calc(var(--u)*130);',
     '  transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--i-accent) 20%,transparent),transparent 62%);',
     '  opacity:0;animation:pkiFade 1.2s .2s ease forwards}',
@@ -579,6 +581,11 @@
     var vars = {bg:p.bg, shell:p.shell, shell2:p.shell2, trim:p.trim, accent:p.accent, light:p.light,
       screen:p.screen, text:p.text, band:p.band || 'transparent', bandEdge:p.bandEdge || 'rgba(0,0,0,.25)',
       btn:p.btn || p.text, btnBg:p.btnBg || p.shell2, l1:p.lens[0], l2:p.lens[1], l3:p.lens[2]};
+    // Seasons: the lens glows pumpkin-orange at Halloween and icy blue in
+    // winter, and the season's snow, leaves or sparks fall in front.
+    var SEA0 = window.pkScreen && window.pkScreen.season ? window.pkScreen.season() : null;
+    if(SEA0 && SEA0.id === 'halloween'){ vars.l1 = '#ffd27a'; vars.l2 = '#f08a24'; vars.l3 = '#7a2e05'; vars.accent = '#f08a24'; }
+    if(SEA0 && SEA0.id === 'winter'){ vars.l1 = '#f2fbff'; vars.l2 = '#7cc6ee'; vars.l3 = '#1f5a8a'; vars.accent = '#7cc6ee'; }
     Object.keys(vars).forEach(function(k){ el.style.setProperty('--i-' + k, vars[k]); });
 
     var leds = [p.accent, p.light, p.trim, p.lens[1]].map(function(c, i){
@@ -627,7 +634,10 @@
       '</div>' +
       '<div class="i-hint" aria-live="polite">Click to open<span>Esc to skip</span></div>' +
       '<button type="button" class="i-skip" aria-label="Skip intro">Skip</button>';
-    var NAME = '<div class="i-name">Norgalidir</div>';
+    // In season, a small emblem sits after the maker's name.
+    var SEA = window.pkScreen && window.pkScreen.season ? window.pkScreen.season() : null;
+    var EMB = SEA ? '<span class="pk-season-emblem" style="letter-spacing:0;width:1.6em;height:1.6em;vertical-align:-.45em">' + SEA.emblem + '</span>' : '';
+    var NAME = '<div class="i-name">Norgalidir' + EMB + '</div>';
     var tail = '<div class="i-hint" aria-live="polite">Click to open<span>Esc to skip</span></div>' +
       '<button type="button" class="i-skip" aria-label="Skip intro">Skip</button>';
     var bookHTML =
@@ -689,7 +699,7 @@
           '<div class="i-f i-lout">' +
             (p.band ? '<div class="i-band"></div>' : '') +
             '<div class="i-lens"></div><div class="i-camring"></div><div class="i-rec"></div><div class="i-slot"></div><div class="i-leds">' + leds + '</div>' +
-            '<div class="i-name" style="left:calc(var(--u)*3.4);bottom:calc(var(--u)*5.1)">Norgalidir</div>' +
+            '<div class="i-name" style="left:calc(var(--u)*3.4);bottom:calc(var(--u)*5.1)">Norgalidir' + EMB + '</div>' +
           '</div>' +
           '<div class="i-3d i-dome">' + dome + '</div>' +
           '<div class="i-3d i-cam">' + cam + '</div>' +
@@ -698,6 +708,11 @@
       '<div class="i-hint" aria-live="polite">Click to open<span>Esc to skip</span></div>' +
       '<button type="button" class="i-skip" aria-label="Skip intro">Skip</button>';
 
+    if(SEA0 && window.pkScreen.seasonParticles){
+      var flakes = window.pkScreen.seasonParticles();
+      if(flakes) el.insertAdjacentHTML('beforeend', '<div class="pk-season-layer" aria-hidden="true" style="position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden">' + flakes + '</div>');
+      if(SEA0.id === 'halloween') el.classList.add('i-spooky');
+    }
     (document.body || document.documentElement).appendChild(el);
 
     // Fill the screen with the menu preview, drawn at the window's width

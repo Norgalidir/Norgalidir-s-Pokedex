@@ -4,6 +4,301 @@ The version shown at the bottom of every page matches the newest entry here.
 Bump it with every set of changes you upload: the second number for fixes and
 small additions, the first for big new sections.
 
+## v2.75 · 15 Nov 2026
+
+- **Android app.** The Pokédex now also builds as an Android app (APK) that
+  runs entirely on the phone, no website needed. GitHub builds it every time
+  you publish an update:
+  - the friends' app goes on the public release, your own Professor copy on a
+    private draft release only you can see;
+  - sprites are imported on the phone from a zip made by "Make Phone
+    Sprites.bat" (the app asks the first time; Settings → Phone app to
+    import again);
+  - backups and Trainer Card pictures save through Android's "Save as"
+    screen, and Import backup opens the phone's file picker;
+  - the phone app checks GitHub for a newer version and offers the download.
+- Settings has a **Phone app** section on the phone (sprite count, import,
+  check for a new version).
+
+## v2.74 · 15 Nov 2026
+
+- **Gift & event OTs**, a second address book on the Trainer Card under the
+  OT address book, for trainers on gifts and events (AZ, GF, HOME …) so your
+  own trainers stay tidy. Same fields: name, TID, game and a note.
+  - Move to gifts / Move to mine shifts a trainer between the two books.
+  - In a Pokémon's Original Trainer list your own trainers come first, then
+    the gift ones marked "Gift ·". Picking one, or typing its TID, still fills
+    in Caught in from its game.
+  - The Pokémon count on each card now matches the TID too, so two trainers
+    with the same name are counted separately.
+
+## v2.73 · 15 Nov 2026
+
+- **Eternal Flower Floette (AZ's Floette)** is now a form of Floette, listed
+  straight after the White Flower, so it sits with the other Floettes in the
+  Pokédex, the living-form counts and Boxes. (Before, only its Mega Evolution
+  was in the app.)
+  - Where to find shows how to get it: a gift from your rival after the 15th
+    Reward Match of the Infinite Z-A Royale in Legends: Z-A (Lv 72, OT AZ,
+    ID 000001).
+  - It's left out of Luxury Ball and shiny targets (a fixed gift), and can't
+    be marked as an Alpha.
+  - Its picture goes in images/forms as 670-eternal-flower.png.
+
+## v2.72 · 15 Nov 2026
+
+- **Alphas can depend on the form.** Vivillon can only be an Alpha in its
+  Meadow Pattern (wild in Z-A's Wild Zones) or Garden Pattern (Mega Dimension
+  Hyperspace zones). Other patterns no longer offer Mark as Alpha, and Where
+  to find says they never appear as Alphas. Marine only comes from the Lumiose
+  Museum Spewpa gift; the rest arrive by transfer.
+
+## v2.71 · 15 Nov 2026
+
+- **Kalos starters can be Alphas in Legends: Z-A.** Chespin, Fennekin and
+  Froakie and their evolutions are now on the Z-A Alpha list, so Mark as Alpha
+  and Where to find's Alpha option work for them.
+
+## v2.70 · 15 Nov 2026
+
+- **Keldeo in Sword / Shield:** added at Ballimere Lake in the Crown Tundra
+  (Lv 65): bring Cobalion, Terrakion and Virizion caught in your own game to
+  the island and cook a curry. You choose the ball.
+- **Legends: Z-A legendaries:** each Mega Dimension legendary and mythical now
+  says how to get it (story Donut battles, the Special Scan for Keldeo,
+  Meloetta, the Lati twins and the Swords of Justice, and the side missions for
+  Genesect, Marshadow, Meltan, Volcanion, Magearna, Hoopa and Zeraora) instead
+  of "Story or side mission".
+- **Legends: Z-A balls:** the Poké Ball Boutique balls (Luxury, Heal, Net,
+  Nest, Dive, Dusk, Timer, Quick, Repeat) now count in Where to find.
+- **Hisuian evolutions in any ball:** for Hisuian Typhlosion, Samurott,
+  Decidueye, Lilligant, Braviary, Sliggoo, Goodra and Avalugg, and for
+  Wyrdeer, Kleavor and Ursaluna, Where to find explains how to get one in a
+  modern ball: catch the earlier stage in that ball, move it to Legends:
+  Arceus and evolve it there.
+
+## v2.69 · 14 Nov 2026
+
+- **Where to find follows the form you're viewing.**
+  - Regional forms only show their own region: Hisuian in Legends: Arceus,
+    Alolan in Sun / Moon and Ultra Sun / Ultra Moon, Galarian in Sword /
+    Shield, Paldean in Scarlet / Violet. The title and picture show the form.
+  - Pokémon whose Legends: Arceus version is always Hisuian (Samurott,
+    Typhlosion, Decidueye, Growlithe, Zorua, Goodra …) no longer list Legends:
+    Arceus for their normal form.
+  - Gigantamax forms show Sword / Shield only, with how to get one: Max Soup
+    at the Master Dojo for most, the Hammerlocke gift (Let's Go save data) for
+    Pikachu and Eevee, and Pokémon HOME for Melmetal.
+  - For a form you get by evolving, earlier stages caught in the right game
+    are listed too ("As Bulbasaur, then evolve it").
+
+## v2.68 · 14 Nov 2026
+
+- **Bigger Poké Ball icons** for the new high-resolution ball images. The ball
+  in the top-left of a Boxes slot now scales with the slot (about a sixth of
+  its width, up to 60 px) with a soft shadow, and shows the ball's name on
+  hover. The ball beside Caught in, the ball picker and the list view marks
+  are larger too.
+
+## v2.67 · 14 Nov 2026
+
+- **Legends: Arceus balls** in the Caught in picker: Hisuian Poké, Great and
+  Ultra Balls, Feather, Wing and Jet Balls, Hisuian Heavy, Leaden and Gigaton
+  Balls, and the Origin Ball. The Strange Ball stays for Pokémon that show it
+  in other games.
+  - Seven of them use images you already have in images/items. The Hisuian
+    Poké, Great and Ultra Balls need their own pictures, saved as
+    hisuian-poke-ball.png, hisuian-great-ball.png and hisuian-ultra-ball.png;
+    until then they show a coloured dot.
+- **Where to find** knows them: pick any of them (or the Strange Ball) and it
+  shows Legends: Arceus spots. Gifts there come in a Hisuian Poké Ball, the
+  Origin Ball is Arceus only, and it no longer suggests breeding into a ball
+  that can't be bred into.
+
+## v2.66 · 13 Nov 2026
+
+A check of every game's Pokédex against the encounter data, with the gaps
+filled in.
+
+- **Legends: Arceus locations rebuilt.** 28 Pokémon that aren't in the game
+  (Meowth, Wooper, Bagon, Nidoran and others) were listed, and about 65 that
+  are (Snorlax, Pikachu, Ralts, Gible, Riolu, Zorua and more) had no location.
+  Every Hisui Pokémon now names the exact spots it spawns in (e.g. Obsidian
+  Fieldlands: Sandgem Flats), with Day / Night where it matters, plus
+  space-time distortion spawns. Shaymin added; Darkrai and Shaymin now name
+  the right save data.
+- **Alpha lists tidied:** Hitmonlee, Hitmonchan, Hitmontop, Tyrogue, Wooper,
+  Quagsire and Girafarig removed from Legends: Arceus (not in the game); the
+  Johto / Unova starter evolutions and Zorua / Zoroark removed from Z-A.
+- **Sword / Shield DLC:** the Isle of Armor and Crown Tundra wild Pokémon are
+  now listed (by region for now), plus the Bulbasaur / Squirtle gift, the
+  Crown Tundra fossils in Max Lair, the Swords of Justice and Spiritomb.
+- **Older games:** Staryu, Clamperl and Chinchou (Ruby / Sapphire / Emerald);
+  Surskit, Gulpin, Torkoal, Barboach, Corphish, Jigglypuff, Staryu, Chimecho,
+  Corsola and the Dive Pokémon (Omega Ruby / Alpha Sapphire); Murkrow,
+  Misdreavus, Glameow and Stunky (Platinum); Carnivine (Brilliant Diamond /
+  Shining Pearl); Aerodactyl from the Old Amber (X / Y).
+
+## v2.65 · 13 Nov 2026
+
+- **Legends: Z-A Alphas now include the Mega Dimension DLC.** About 80
+  species found wild in Hyperspace Lumiose (Zangoose, Seviper, Frigibax and
+  others) were missing from the Alpha list, so their entries didn't offer
+  Mark as Alpha and Where to find had no Alpha spots for them. They now
+  show "Legends: Z-A" as an Alpha game, and Where to find lists Hyperspace
+  Lumiose.
+
+## v2.64 · 13 Nov 2026
+
+- **Caught in follows your Original Trainer.** Each trainer in the OT address
+  book (Trainer Card) now has a Game. Picking that trainer on a Pokémon, or
+  typing their TID, fills in Caught in with that game (typing a TID also
+  fills in the OT name). You can still change Caught in by hand afterwards.
+  - Existing trainers get their game worked out from the note where it names
+    one ("Pokemon Violet" becomes Violet); anything it can't tell is left for
+    you to pick.
+  - A line under Caught in says where the game came from, or reminds you to
+    give the trainer a game.
+
+## v2.63 · 12 Nov 2026
+
+- **Dex number trainer** ("Learn dex numbers" on the menu, under the
+  generation quizzes), for learning National Pokédex numbers.
+  - **Easy:** "Who is #207?" Pick from four neighbouring Pokémon.
+  - **Hard:** "What number is Gligar?" Type the number.
+  - **Practice:** no timer, as long as you like. Every answer shows the
+    Pokémon with the ones either side of it, and numbers you miss come back
+    more often until you get them right.
+  - **Test:** 20 questions, 15 seconds each, with a best score kept for each
+    level and range. Leaving part-way ends the test.
+  - Practise all 1025 or one generation at a time.
+- New **Dex numbers** honours: Number Spotter (20 / 20 Easy test), Number
+  Cruncher (20 / 20 Hard test) and the Walking Pokédex trophy (20 / 20 Hard
+  test across all numbers). Test results show in the Journal.
+
+## v2.62 · 12 Nov 2026
+
+- **Generation quizzes**, under the daily quiz on the menu: one for each
+  generation, Gen I (Kanto) to Gen IX (Paldea). Ten questions, 15 seconds
+  each, using only that generation's Pokémon: silhouettes, types, evolutions,
+  Pokédex numbers, abilities, categories and "which of these debuted in this
+  generation?".
+  - Play as often as you like; each play is a fresh set. Your best score per
+    generation shows on its button. Leaving part-way just ends that go.
+  - A perfect 10 earns that generation's **Gen Scholar** badge; all nine earn
+    the **Regional Historian** trophy (new "Gen quizzes" group in Honours).
+  - Best runs show in the Journal under Quiz.
+- The daily quiz is unchanged. Fixed an evolution question that could offer
+  the Pokémon itself as a wrong answer.
+
+## v2.61 · 12 Nov 2026
+
+- **Where to find** on every Pokédex entry: pick a ball (or any ball) and,
+  for Pokémon that can be Alphas, switch on Alpha. It lists every game and
+  place you can catch it that way, with the method, levels, odds and any
+  conditions (time of day, Old Sea Map …). Twin versions with the same
+  results are shown together.
+  - Only games where that ball can be used are shown, and rare balls say
+    where they come from (e.g. Sword/Shield's Ball Guy, Scarlet/Violet raids).
+  - Safari Zones and the Great Marsh only allow Safari Balls; the Bug-Catching
+    Contest only Sport Balls; Legends: Arceus catches show as Strange Balls.
+  - Gifts, in-game trades and eggs only show for Poké Ball or any ball.
+  - Alpha shows Legends: Arceus and Legends: Z-A areas only.
+  - If there's nowhere, it says so and explains how to breed one into the
+    ball instead.
+
+## v2.60 · 10 Nov 2026
+
+- **3D badges:** honours are now solid medals with a thick edge and a back.
+  They sit at an angle, turn towards the pointer, and the ones on show sway
+  gently. When you earn one, it spins in. Trophies stand with a shadow.
+  (Settings → Look → Depth → Flat shows them flat again.)
+- **New Pokémon Professor badge:** a gold medal with a laurel wreath and
+  sunburst, a violet enamel centre with an open book in gold, three set
+  gems and an engraved NORGALIDIR ribbon.
+- **Richer badge art:** every badge has a bevelled inner rim and an
+  embossed symbol.
+- **Fan games** in the Hall of Fame: Emerald Kaizo, Radical Red, Inclement
+  Emerald, Run & Bun and Crystal Clear (16 badges), each with its own
+  badge and Elite Four team. Add any other fan game with "Add a fan game"
+  (name, region, and a badge count or badge names). Each one gets a
+  Champion badge in a new Fan games group on the Trainer Card; Emerald
+  Kaizo's is a special dark-red KAIZO badge. Beat three for the Fan
+  Favourite trophy. Fan games don't count towards the official region
+  Champion badges. They're in Challenge runs too.
+
+## v2.59 · 10 Nov 2026
+
+More seasonal dressing.
+
+- **Winter:** coloured lights strung under the header that twinkle,
+  icicles, holly in the corner, three swinging baubles, frost at the screen
+  corners, a snowdrift along the bottom with a snowman, and snow caps on
+  buttons, panels and tiles.
+- **Halloween:** cobwebs in the top corners with a spider that bobs on its
+  thread, bats that flit across now and then, a glowing jack-o'-lantern,
+  low fog, and buttons that flicker like candlelight.
+- **New Year:** streamers along the top. **Anniversary:** bunting and a cake.
+- **Your own art:** put PNGs in images/season/ to replace pieces, named
+  halloween-bat, halloween-spider, halloween-pumpkin, winter-holly,
+  winter-bauble, winter-snowman or anniversary-cake (.png).
+- **Seasonal music:** in December the music becomes an arrangement of Deck
+  the Halls (a traditional carol) with sleigh bells. At Halloween, the theme
+  plays slower in a minor key with more echo.
+- **Seasonal intro:** the lens glows icy blue in winter and pumpkin orange
+  at Halloween (with a flicker), and the season's snow, leaves or sparks
+  fall in front of the device.
+- **Themed quiz weeks:** more Ice types in December, more Ghost types at
+  Halloween.
+- **Season badges:** finish the daily quiz on three days during Winter or
+  Halloween (two at New Year, one on the anniversary) to earn that year's
+  badge, e.g. Winter 2026. The current season's badge shows on the Trainer
+  Card while it's on.
+
+## v2.58 · 10 Nov 2026
+
+- **3D look:** the app now has the same solid, lit feel as the intro devices.
+  Panels and tiles are raised slabs with a lit top edge and a shadow
+  underneath, buttons are glossy and press in when clicked, search boxes
+  and dropdowns are sunk in, the menu tiles and honours tilt towards the
+  pointer, and the menu lens has a shine. Settings → Look → Depth switches
+  it to Flat if you prefer.
+- **Seasonal looks:** around Halloween (24 Oct – 1 Nov), all of December,
+  New Year and the 27 February anniversary the app dresses up: a seasonal
+  strip under the header, drifting leaves, snow, sparks or confetti, and an
+  emblem next to the Norgalidir engraving on the intro devices. Settings →
+  Look → Seasons can turn it off or preview each one.
+- **Event badge presets:** the Professor tool has a one-click preset for
+  each season's event badge.
+- **Journal** (Guides → Journal): your Pokédex day by day, with catches
+  (grouped when there are lots), shinies with their hunt counts, honours,
+  challenge runs and quiz results, with filters.
+- **Quiz scorecard:** "Share my score" on the quiz results, and "Share
+  today's score" on the menu, save a square picture of the day's score,
+  each answer, your rank and streak (and copy it where allowed).
+
+## v2.57 · 10 Nov 2026
+
+- **Shareable Trainer Card:** "Save card picture" and "Copy picture" on the
+  Trainer Card make a picture of your card in your colour scheme: name and
+  trainer details, Pokédex %, shinies, living forms, honours count, the three
+  honours on show, quiz rank and your current team.
+- **Challenge runs** (Guides → Challenge runs): pick a game and Casual,
+  Tough or Brutal, then roll a random starter and rules. Swap any rule
+  before you start. Track badges and notes, then mark it beaten or give up;
+  past runs are listed. Brutal is always a Nuzlocke underneath.
+- **Compare with a friend** (Trainer Card): load a friend's backup file to
+  compare species, shinies, honours and quiz answers, and list what they
+  have that you don't (and the other way round). Click a name to open it.
+  Nothing of yours changes.
+- **Shiny hunt mode, upgraded:** pick the method and odds right in hunt
+  mode, an odds bar, and a live session timer with your pace per hour. Time
+  spent adds up for each hunt. Finds are logged.
+- **Shiny hunts** on the Trainer Card: hunts still going (tap to resume in
+  hunt mode) and shinies found, with counts, odds and time taken.
+- **New honours:** Marathon Hunter (a find after 4,096+ tries) and Lucky
+  Find (a find in under a tenth of the odds).
+
 ## v2.56 · 9 Nov 2026
 
 - **Daily quiz** on the menu: five questions a day, 15 seconds each, the

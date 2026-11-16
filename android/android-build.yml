@@ -1,0 +1,86 @@
+# Builds the Android app whenever a new version is published (Publish Update.bat).
+# Copied into the updates repository as .github/workflows/android.yml.
+#
+#   Pokedex-Friends-<version>.apk  -> the public release (for friends' phones)
+#   Pokedex-<version>.apk          -> a private draft release only you can see
+#                                     (the Professor's own copy)
+#
+# Needs four repository secrets once: ANDROID_KEYSTORE_B64,
+# ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD.
+name: Android app
+
+on:
+  push:
+    branches: [main]
+    paths: ['manifest.json', 'android/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Version
+        id: v
+        run: echo "version=$(node -p "require('./manifest.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Put the Pokédex pages into the app
+        run: |
+          rm -rf android/build-assets
+          mkdir -p android/build-assets/web
+          cp -r web/. android/build-assets/web/
+
+      - name: Signing key
+        env:
+          KS: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KS" ]; then
+            echo "::error::The Android signing key isn't set up yet. Add the four ANDROID_ secrets (see 'GitHub secrets - copy these.txt')."
+            exit 1
+          fi
+          echo "$KS" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Build
+        working-directory: android
+        env:
+          APP_VERSION: ${{ steps.v.outputs.version }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: gradle --no-daemon assembleProfessorRelease assembleFriendsRelease
+
+      - name: Name the apps
+        run: |
+          mkdir -p out
+          cp android/app/build/outputs/apk/friends/release/app-friends-release.apk "out/Pokedex-Friends-${{ steps.v.outputs.version }}.apk"
+          cp android/app/build/outputs/apk/professor/release/app-professor-release.apk "out/Pokedex-${{ steps.v.outputs.version }}.apk"
+
+      - name: Friends' app on the public release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.v.outputs.version }}
+          name: Pokédex ${{ steps.v.outputs.version }}
+          files: out/Pokedex-Friends-${{ steps.v.outputs.version }}.apk
+          make_latest: true
+
+      - name: Professor's app on a private draft
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: professor-v${{ steps.v.outputs.version }}
+          name: Professor's Pokédex ${{ steps.v.outputs.version }} (private)
+          draft: true
+          files: out/Pokedex-${{ steps.v.outputs.version }}.apk

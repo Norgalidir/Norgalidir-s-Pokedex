@@ -15,7 +15,9 @@
  */
 (function(){
   if(window.__pkQuizLoaded) return; window.__pkQuizLoaded = true;
-  var COUNT = 5, SECONDS = 15;
+  var COUNT = 5, GEN_COUNT = 10, SECONDS = 15;
+  var ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
+  var REGION = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Paldea'];
   var GENS = [[1,151,'Generation I'],[152,251,'Generation II'],[252,386,'Generation III'],[387,493,'Generation IV'],[494,649,'Generation V'],
     [650,721,'Generation VI'],[722,809,'Generation VII'],[810,905,'Generation VIII'],[906,1025,'Generation IX']];
 
@@ -47,7 +49,7 @@
     evolve: function(r, e, L, by){
       var to = String(e.evo || '').split(';').map(function(x){ return +x.split(':')[0]; }).filter(function(n){ return by[n]; });
       if(!to.length) return null; var t = by[to[0]];
-      var same = L.filter(function(x){ return x.types[0] === t.types[0] && x.num !== t.num && to.indexOf(x.num) < 0; });
+      var same = L.filter(function(x){ return x.types[0] === t.types[0] && x.num !== t.num && x.num !== e.num && to.indexOf(x.num) < 0; });
       return {q:'What does ' + e.name + ' evolve into?', answer:t.name, options:opts(r, t.name, shuffle(r, same).slice(0, 10).map(function(x){ return x.name; }))}; },
     ability: function(r, e, L){
       var ab = abilitiesOf(e); if(!ab.length) return null; var a = pick(r, ab);
@@ -63,22 +65,40 @@
       var a = pick(r, strong), weak = types.filter(function(t){ return !(C[def][t] >= 2); });
       return {q:'Which type of move is super effective against a ' + def + '-type Pokémon?', answer:a, options:opts(r, a, weak)}; }
   };
+  // Generation quizzes only: which of four Pokémon debuted in this gen.
+  MAKERS.debut = function(r, e, L, by, A){ var g = genOf(e.num);
+    var others = A.filter(function(x){ return genOf(x.num) !== g; });
+    var o = opts(r, e.name, shuffle(r, others).slice(0, 10).map(function(x){ return x.name; })); if(!o) return null;
+    return {q:'Which of these Pokémon first appeared in ' + g + '?', answer:e.name, options:o}; };
   var ORDER = ['silhouette', 'type', 'evolve', 'number', 'ability', 'weakness', 'category', 'generation'];
+  var GEN_ORDER = ['silhouette', 'type', 'evolve', 'number', 'ability', 'category', 'debut', 'silhouette', 'type', 'evolve'];
 
-  function build(entries, sprite, day){
-    var r = rng('pokedex-quiz|' + day), L = entries.filter(function(e){ return e.num >= 1 && e.num <= 1025 && e.types && e.types.length; });
-    var by = {}; L.forEach(function(e){ by[e.num] = e; });
-    var kinds = shuffle(r, ORDER), out = [], tries = 0, used = {};
+  // gen (1 to 9) builds a generation quiz: its Pokémon only, a fresh set
+  // every play. Without it, today's daily quiz.
+  function build(entries, sprite, day, gen){
+    var A = entries.filter(function(e){ return e.num >= 1 && e.num <= 1025 && e.types && e.types.length; });
+    var G = gen ? GENS[gen - 1] : null, L = G ? A.filter(function(e){ return e.num >= G[0] && e.num <= G[1]; }) : A;
+    var r = G ? rng('pokedex-gen|' + gen + '|' + Date.now() + '|' + Math.random()) : rng('pokedex-quiz|' + day);
+    var by = {}; A.forEach(function(e){ by[e.num] = e; });
+    var N = G ? GEN_COUNT : COUNT;
+    var kinds = G ? shuffle(r, GEN_ORDER) : shuffle(r, ORDER), out = [], tries = 0, used = {};
+    // Themed weeks: Ice types through December, Ghost types at Halloween.
+    var theme = G ? null : weekTheme(day), themed = theme ? L.filter(function(e){ return e.types.indexOf(theme.type) >= 0; }) : [];
     // Always try a silhouette first if sprites are about; it's the fun one.
-    if(sprite) kinds = ['silhouette'].concat(kinds.filter(function(k){ return k !== 'silhouette'; }));
-    while(out.length < COUNT + 3 && tries++ < 200){
-      var k = kinds[out.length % kinds.length], e = pick(r, L);
+    if(!sprite) kinds = kinds.filter(function(k){ return k !== 'silhouette'; });
+    if(sprite && !G) kinds = ['silhouette'].concat(kinds.filter(function(k){ return k !== 'silhouette'; }));
+    while(out.length < N + (G ? 8 : 3) && tries++ < 600){
+      var k = kinds[out.length % kinds.length], e = pick(r, themed.length && r() < 0.6 ? themed : L);
       if(used[e.num] || (k === 'silhouette' && !(sprite && sprite(e.num)))) continue;
-      var q = MAKERS[k](r, e, L, by); if(!q || !q.options) continue;
+      var q = MAKERS[k](r, e, L, by, A); if(!q || !q.options) continue;
       if(k === 'silhouette') q.img = sprite(e.num);
       used[e.num] = 1; out.push(q);
     }
     return out; // a few spare, in case a silhouette image fails to load
+  }
+  function weekTheme(day){
+    var id = window.pkScreen && window.pkScreen.seasonFor ? window.pkScreen.seasonFor(new Date(day + 'T12:00:00')) : '';
+    return id === 'winter' ? {type:'Ice', label:'Ice-type week'} : id === 'halloween' ? {type:'Ghost', label:'Ghost-type week'} : null;
   }
   function loadable(url){ return new Promise(function(res){ var i = new Image(); i.onload = function(){ res(true); }; i.onerror = function(){ res(false); }; i.src = url; setTimeout(function(){ res(false); }, 4000); }); }
 
@@ -116,6 +136,8 @@
     if(!document.getElementById('pk-quiz-css')){ var st = document.createElement('style'); st.id = 'pk-quiz-css'; st.textContent = CSS; document.head.appendChild(st); }
     var el = document.createElement('div'); el.id = 'pk-quiz'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Daily quiz');
     document.body.appendChild(el);
+    var GEN = o.gen >= 1 && o.gen <= 9 ? o.gen : 0, COUNT = GEN ? GEN_COUNT : 5, TITLE = GEN ? 'Gen ' + ROMAN[GEN - 1] + ' quiz' : 'Daily quiz';
+    if(GEN) el.setAttribute('aria-label', TITLE);
     var counting = false, day = today(), Q = [], i = 0, correct = 0, marks = [], timer = null, left = SECONDS, done = false, live = false, answered = false;
     running = {el: el};
 
@@ -124,20 +146,23 @@
     function close(){ cleanup(); el.remove(); }
     function finish(failed){
       if(done) return; done = true; live = false; clearInterval(timer);
-      var res = {correct: failed ? 0 : correct, total: COUNT, failed: !!failed};
+      var res = {correct: failed ? 0 : correct, total: COUNT, failed: !!failed, marks: failed ? [] : marks.slice()};
       try { o.onFinish && o.onFinish(res); } catch(e){}
-      var t = o.tier ? o.tier(res.correct) : null;
+      var t = o.tier && !(GEN && failed) ? o.tier(res.correct) : null;
       el.innerHTML = '<div class="q-card">' +
-        '<div class="q-top"><span>Daily quiz · ' + day + '</span></div>' +
+        '<div class="q-top"><span>' + (GEN ? TITLE + ' · ' + REGION[GEN - 1] : 'Daily quiz · ' + day) + '</span></div>' +
         (failed
-          ? '<div class="q-big">✕</div><div class="q-mid"><b>Quiz over.</b> You left the quiz, so today scores 0. A new quiz comes tomorrow.</div>'
+          ? '<div class="q-big">✕</div><div class="q-mid"><b>Quiz over.</b> ' + (GEN ? 'You left the quiz, so this go doesn’t count. Try again whenever you like.' : 'You left the quiz, so today scores 0. A new quiz comes tomorrow.') + '</div>'
           : '<div class="q-big">' + correct + ' / ' + COUNT + '</div><div class="q-mid">' +
-              (correct === COUNT ? 'Perfect score!' : correct >= 3 ? 'Nicely done.' : 'Tomorrow’s another go.') + '</div>') +
+              (correct === COUNT ? 'Perfect score!' : correct >= Math.ceil(COUNT * .6) ? 'Nicely done.' : GEN ? 'Have another go.' : 'Tomorrow’s another go.') + '</div>') +
         (t ? '<div class="q-mid" style="margin-top:10px">' + esc(t) + '</div>' : '') +
-        '<div class="q-btns"><button type="button" class="btn btn-primary" data-act="close">Done</button></div></div>';
+        '<div class="q-btns">' + (GEN ? '<button type="button" class="btn btn-secondary" data-act="again">Play again</button>' : '') + (!failed && o.share ? '<button type="button" class="btn btn-secondary" data-act="share">Share my score</button>' : '') +
+        '<button type="button" class="btn btn-primary" data-act="close">Done</button></div></div>';
       el.querySelector('[data-act="close"]').addEventListener('click', close);
+      var ag = el.querySelector('[data-act="again"]'); if(ag) ag.addEventListener('click', function(){ close(); start(o); });
+      var sh = el.querySelector('[data-act="share"]'); if(sh) sh.addEventListener('click', function(){ try { o.share(res); } catch(e){} });
       el.querySelector('[data-act="close"]').focus();
-      sfx(failed ? 'look' : correct >= 3 ? 'ready' : 'menu');
+      sfx(failed ? 'look' : correct >= Math.ceil(COUNT * .6) ? 'ready' : 'menu');
     }
     function onLeave(){ if(live) finish(true); }
     function onVis(){ if(live && document.hidden) finish(true); }
@@ -171,19 +196,20 @@
       setTimeout(function(){ if(done) return; i++; if(i >= COUNT) finish(false); else show(); }, ok ? 1100 : 1900);
     }
 
-    el.innerHTML = '<div class="q-card"><div class="q-top"><span>Daily quiz · ' + day + '</span></div>' +
-      '<div class="q-q" style="margin-top:14px">Five questions, ' + SECONDS + ' seconds each.</div>' +
-      '<div class="q-mid" style="text-align:left;margin-top:10px">Stay on the quiz until it’s done. If you switch app, click away from the window or close it, the quiz ends and today scores 0. Keys 1 to 4 pick an answer.</div>' +
+    el.innerHTML = '<div class="q-card"><div class="q-top"><span>' + (GEN ? TITLE + ' · ' + REGION[GEN - 1] : 'Daily quiz · ' + day) + '</span></div>' +
+      '<div class="q-q" style="margin-top:14px">' + (GEN ? 'Ten questions on ' + REGION[GEN - 1] + '’s Pokémon (#' + GENS[GEN - 1][0] + '–' + GENS[GEN - 1][1] + '), ' + SECONDS + ' seconds each.' : 'Five questions, ' + SECONDS + ' seconds each.') + '</div>' +
+      (!GEN && weekTheme(day) ? '<div class="q-mid" style="text-align:left;margin-top:6px;color:var(--color-accent-300,#cbc)">' + weekTheme(day).label + ': expect a few more ' + weekTheme(day).type + ' types than usual.</div>' : '') +
+      '<div class="q-mid" style="text-align:left;margin-top:10px">' + (GEN ? 'Play as often as you like; your best score is kept and a perfect 10 earns this gen’s badge. Stay on the quiz until it’s done: switching app or clicking away ends that go. Keys 1 to 4 pick an answer.' : 'Stay on the quiz until it’s done. If you switch app, click away from the window or close it, the quiz ends and today scores 0. Keys 1 to 4 pick an answer.') + '</div>' +
       '<div class="q-btns"><button type="button" class="btn btn-ghost" data-act="close">Not now</button><button type="button" class="btn btn-primary" data-act="go">Start</button></div></div>';
     el.querySelector('[data-act="close"]').addEventListener('click', close);
     el.querySelector('[data-act="go"]').addEventListener('click', function(){
       counting = true;
-      var cand = build(o.entries || [], o.sprite, day);
+      var cand = build(o.entries || [], o.sprite, day, GEN);
       el.innerHTML = '<div class="q-card"><div class="q-big" id="pk-quiz-cd">3</div><div class="q-mid">Get ready…</div></div>';
       // Check silhouette images load; drop any that don't.
       Promise.all(cand.map(function(q){ return q.img ? loadable(q.img) : Promise.resolve(true); })).then(function(ok){
         Q = cand.filter(function(q, k){ return ok[k]; }).slice(0, COUNT);
-        if(Q.length < COUNT){ counting = false; el.innerHTML = '<div class="q-card"><div class="q-mid">Couldn’t build today’s quiz. Try again in a moment.</div><div class="q-btns"><button class="btn btn-primary" data-act="close">OK</button></div></div>';
+        if(Q.length < COUNT){ counting = false; el.innerHTML = '<div class="q-card"><div class="q-mid">Couldn’t build ' + (GEN ? 'the quiz' : 'today’s quiz') + '. Try again in a moment.</div><div class="q-btns"><button class="btn btn-primary" data-act="close">OK</button></div></div>';
           el.querySelector('[data-act="close"]').addEventListener('click', close); return; }
         var n = 3, cd = el.querySelector('#pk-quiz-cd');
         var t = setInterval(function(){ n--; if(n > 0){ if(cd) cd.textContent = n; sfx('menu'); return; }
@@ -198,5 +224,7 @@
     addEventListener('keydown', onKey, true);
   }
 
-  window.pkQuiz = { start: start, today: today, count: COUNT, seconds: SECONDS, _build: build };
+  function ensureCss(){ if(!document.getElementById('pk-quiz-css')){ var st = document.createElement('style'); st.id = 'pk-quiz-css'; st.textContent = CSS; document.head.appendChild(st); } }
+  window.pkQuiz = { ensureCss: ensureCss, busy: function(){ return !!running; }, start: start, today: today, count: COUNT, genCount: GEN_COUNT, seconds: SECONDS, _build: build, weekTheme: weekTheme,
+    gens: GENS.map(function(g, i){ return {n: i + 1, roman: ROMAN[i], region: REGION[i], from: g[0], to: g[1]}; }) };
 })();
