@@ -4,6 +4,14 @@ The version shown at the bottom of every page matches the newest entry here.
 Bump it with every set of changes you upload: the second number for fixes and
 small additions, the first for big new sections.
 
+## v2.77 · 16 Nov 2026
+
+- **New Android app icon.** A glossy lavender Poké Ball lens on a deep night
+  background, matching the app. It's a proper adaptive icon now, so Pixel and
+  other launchers shape it themselves instead of putting the old square icon
+  inside a white circle, and it follows Android's themed (Material You) icons
+  when those are switched on.
+
 ## v2.76 · 16 Nov 2026
 
 - **Android app: fixed the missing styling.** Android quietly leaves out
