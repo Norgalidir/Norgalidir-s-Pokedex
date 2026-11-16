@@ -295,6 +295,10 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
           <button class="btn btn-secondary" onClick="{{ onPhoneSprites }}" style="font-size:13px">Import sprites zip</button>
           <button class="btn btn-ghost" onClick="{{ onPhoneUpdate }}" style="font-size:13px">Check for a new version</button>
         </div>
+        <label style="display:flex;gap:var(--space-2);align-items:flex-start;margin-top:var(--space-3);font-size:13px;cursor:pointer">
+          <input type="checkbox" checked="{{ phoneIconOn }}" onChange="{{ onPhoneIcon }}" style="margin-top:3px">
+          <span>Match the app icon to my theme<br><span style="font-size:12px;color:var(--color-neutral-500)">Some home screens remove the shortcut when the icon changes; add it again from the app drawer.</span></span>
+        </label>
         <div style="font-size:12px;color:var(--color-neutral-500);margin-top:var(--space-2)">Your progress is kept inside this app. To move it between the PC and the phone, use Export backup on one and Import backup on the other.</div>
       </details>
       </sc-if>
@@ -3249,7 +3253,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 
   <div style="display:flex;justify-content:flex-start;gap:var(--space-3);align-items:baseline;padding:var(--space-8) var(--space-8) var(--space-6);font-size:11px;letter-spacing:.04em;color:var(--color-neutral-500);font-variant-numeric:tabular-nums">
     <span>Personal Pokédex⁠​‌​​​‌‌‌​‌​​‌​‌‌⁠</span>
-    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.77</span>
+    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.78</span>
     <span>· 16 Nov 2026</span>
   </div>
 
@@ -3374,7 +3378,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 // Pokédex data and the sprite file settings, and asks for the owner's name.
 const FRIENDS = !!window.pokedexFriends;
 // Bump with every release (also the footer badge and the changelog).
-const APP_VERSION = '2.77';
+const APP_VERSION = '2.78';
 
 class Component extends DCLogic {
   constructor(p){
@@ -3832,6 +3836,10 @@ class Component extends DCLogic {
     let x = document.getElementById('pk-theme-extra');
     if(!x){ x = document.createElement('style'); x.id = 'pk-theme-extra'; document.head.appendChild(x); }
     x.textContent = name === 'Daylight' ? '.lighten{mix-blend-mode:multiply !important}' : '';
+    // The app icon follows the theme (PC: window, taskbar and shortcuts;
+    // phone: home-screen icon, when that's switched on in Settings).
+    try { if(window.pokedexSetIcon) window.pokedexSetIcon(name || 'Nocturne'); } catch(e){}
+    try { if(window.PokedexAndroid && window.PokedexAndroid.setIconTheme) window.PokedexAndroid.setIconTheme(name || 'Nocturne'); } catch(e){}
   }
   // Honours: award any whose rule the save now meets, and celebrate them.
   honourStats(s){
@@ -7692,6 +7700,9 @@ class Component extends DCLogic {
         return {isPhone: true,
           phoneInfo: 'Version ' + String(v).replace(/\.0$/, '') + ' · ' + (n ? n.toLocaleString('en-GB') + ' sprite pictures on this phone' : 'no sprites on this phone yet'),
           onPhoneSprites: () => { try { P.importSprites(); } catch(e){} },
+          phoneIconOn: (() => { try { return !!P.iconFollowsTheme(); } catch(e){ return false; } })(),
+          onPhoneIcon: e => { const on = !!e.target.checked; try { P.setIconFollowsTheme(on); P.setIconTheme(s.theme || 'Nocturne'); } catch(err){}
+            this.flash(on ? 'The app icon now follows your theme.' : 'The app icon is back to Nocturne.'); this.setState({phoneIconTick: Date.now()}); },
           onPhoneUpdate: () => { try { P.checkForUpdate(); this.flash('Checking GitHub for a newer version…'); } catch(e){} }}; })(),
       onExport: () => {
         const now = new Date();

@@ -3,6 +3,9 @@ package com.georgekirby.pokedex;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +32,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -354,6 +358,9 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void importSprites() { runOnUiThread(() -> askForSprites(false)); }
         @JavascriptInterface public void openUrl(String url) { runOnUiThread(() -> openOutside(Uri.parse(url))); }
         @JavascriptInterface public void checkForUpdate() { MainActivity.this.checkForUpdate(); }
+        @JavascriptInterface public boolean iconFollowsTheme() { return prefs().getBoolean("iconFollows", false); }
+        @JavascriptInterface public void setIconFollowsTheme(boolean on) { prefs().edit().putBoolean("iconFollows", on).apply(); }
+        @JavascriptInterface public void setIconTheme(String theme) { MainActivity.this.setIconTheme(theme); }
         @JavascriptInterface public void saveFile(String name, String mime, String base64) {
             final byte[] bytes = Base64.decode(base64, Base64.DEFAULT);
             runOnUiThread(() -> {
@@ -365,6 +372,34 @@ public class MainActivity extends Activity {
                 try { startActivityForResult(i, SAVE_FILE); } catch (ActivityNotFoundException e) { pendingSave = null; }
             });
         }
+    }
+
+    // ---- Home-screen icon ---------------------------------------------------------
+    // Each theme has its own launcher icon (an activity-alias in the manifest).
+    // Only switched when "Match the app icon to my theme" is on, because some
+    // launchers drop the home-screen shortcut when the icon changes.
+
+    static final String[] ICON_THEMES = {"Nocturne", "Midnight", "Eclipse", "Daylight", "Ultra",
+        "Dive", "Friend", "Luxury", "Cherish", "Dexter"};
+
+    SharedPreferences prefs() { return getSharedPreferences("pokedex", MODE_PRIVATE); }
+
+    void setIconTheme(String theme) {
+        SharedPreferences p = prefs();
+        String want = p.getBoolean("iconFollows", false) && Arrays.asList(ICON_THEMES).contains(theme) ? theme : "Nocturne";
+        if (want.equals(p.getString("iconNow", "Nocturne"))) return;
+        try {
+            PackageManager pm = getPackageManager();
+            String base = MainActivity.class.getPackage().getName() + ".Icon";
+            pm.setComponentEnabledSetting(new ComponentName(getPackageName(), base + want),
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+            for (String t : ICON_THEMES) {
+                if (t.equals(want)) continue;
+                pm.setComponentEnabledSetting(new ComponentName(getPackageName(), base + t),
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            }
+            p.edit().putString("iconNow", want).apply();
+        } catch (Exception ignored) {}
     }
 
     // ---- Updates -----------------------------------------------------------------

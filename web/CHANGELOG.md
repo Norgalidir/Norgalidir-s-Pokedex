@@ -4,6 +4,20 @@ The version shown at the bottom of every page matches the newest entry here.
 Bump it with every set of changes you upload: the second number for fixes and
 small additions, the first for big new sections.
 
+## v2.78 · 16 Nov 2026
+
+- **New PC icon**, matching the Android one: a glossy Poké Ball lens on a deep
+  night background, in a rounded square.
+- **The icon follows your theme.** Each of the ten themes has its own icon
+  (lavender Nocturne, gold Ultra and Luxury, cyan Dive, green Friend, pink
+  Cherish, red Dexter, a light Daylight one …).
+  - PC: the window and taskbar change straight away, and the desktop and
+    Start menu shortcuts are switched to the matching icon (Windows can take a
+    moment to refresh them). Needs the new installer.
+  - Phone: switch on "Match the app icon to my theme" in Settings → Phone app.
+    It's off by default because some home screens remove the shortcut when the
+    icon changes; add it back from the app drawer if that happens.
+
 ## v2.77 · 16 Nov 2026
 
 - **New Android app icon.** A glossy lavender Poké Ball lens on a deep night

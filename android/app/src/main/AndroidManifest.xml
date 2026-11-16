@@ -18,10 +18,129 @@
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|uiMode|density">
+        </activity>
+
+        <!-- One home-screen icon per theme; only one is switched on at a time.
+             Nocturne is the default. See MainActivity.setIconTheme(). -->
+        <activity-alias
+            android:name=".IconNocturne"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_nocturne"
+            android:roundIcon="@mipmap/ic_nocturne"
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconMidnight"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_midnight"
+            android:roundIcon="@mipmap/ic_midnight"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconEclipse"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_eclipse"
+            android:roundIcon="@mipmap/ic_eclipse"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconDaylight"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_daylight"
+            android:roundIcon="@mipmap/ic_daylight"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconUltra"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_ultra"
+            android:roundIcon="@mipmap/ic_ultra"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconDive"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_dive"
+            android:roundIcon="@mipmap/ic_dive"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconFriend"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_friend"
+            android:roundIcon="@mipmap/ic_friend"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconLuxury"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_luxury"
+            android:roundIcon="@mipmap/ic_luxury"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconCherish"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_cherish"
+            android:roundIcon="@mipmap/ic_cherish"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".IconDexter"
+            android:targetActivity=".MainActivity"
+            android:icon="@mipmap/ic_dexter"
+            android:roundIcon="@mipmap/ic_dexter"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
     </application>
 </manifest>
