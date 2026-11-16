@@ -1,11 +1,11 @@
 {
-  "version": "2.78.0",
-  "minApp": "2.78.0",
+  "version": "2.79.0",
+  "minApp": "2.79.0",
   "installer": "https://github.com/Norgalidir/Norgalidir-s-Pokedex/releases/latest",
-  "published": "2026-11-16T18:17:22.019Z",
+  "published": "2026-11-16T18:41:22.552Z",
   "files": {
-    "CHANGELOG.md": "71f26784288d75585eab8e2573f28b018cb2a336d3dc2920f359ba35413af27d",
-    "Pokedex.dc.html": "aed4229b2cb4fdc9cc59e775b4a1c283c2fa9b8b5d9eafe5e8d626eaadcb213b",
+    "CHANGELOG.md": "e4d5df6805bc213f97e6fded2ff316436715ce3e28fef6df5e7bd8fa6f807c6d",
+    "Pokedex.dc.html": "29403112ea305064073b0279de63995c78db3a4d237fa64855e26eb495d595a4",
     "_ds/nocturne-7fd53eca-b1c1-42d1-a568-1ba247596b3b/_ds_bundle.js": "aceb66bfea8c86f6ebf519525c4669e2d6bda22791fdf24db8f2cff09deabfb0",
     "_ds/nocturne-7fd53eca-b1c1-42d1-a568-1ba247596b3b/styles.css": "6fea354710ec4e3b2b979b723ed37d8e8959bb7d9137425d0d562b4ad8733cda",
     "forms-all-slugs.json": "82a7bda57e53626f4e1be2828b8e801ea0b3d0bc780cabb77f9ef8cef161409d",
@@ -89,7 +89,7 @@
     "pokedex-transfer.js": "72b45fe36b8fe0b36098c74b1547d19834b2dc9727877b0798c1dbb97e9744c9",
     "screenshots/orchid.png": "d1527508ef6b6e24ca8cbc3c9c6db9ae4f2a98a0a1e8a757e6572eed34f63985",
     "support.js": "8fe7df74405f3c55f49b7249c74ea1397e65d07dea2b1bd3b4a489bec2e28cbe",
-    "sw.js": "dc97a57c8aaab65dc5b23292f59febeaf1638f1175b340cc0589ca5c107e507a",
+    "sw.js": "b62f8ba6104c13175864bd2c6fbebe9a90a02581c168c8619f882dd4e98ae475",
     "vendor/react-dom.production.min.js": "35f4f974f4b2bcd44da73963347f8952e341f83909e4498227d4e26b98f66f0d",
     "vendor/react.production.min.js": "d949f1c3687aedadcedac85261865f29b17cd273997e7f6b2bfc53b2f9d4c4dd"
   }

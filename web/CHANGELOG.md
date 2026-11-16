@@ -4,6 +4,15 @@ The version shown at the bottom of every page matches the newest entry here.
 Bump it with every set of changes you upload: the second number for fixes and
 small additions, the first for big new sections.
 
+## v2.79 · 16 Nov 2026
+
+- **Discord Rich Presence** (PC app). While Discord is open, your profile shows
+  "Playing Norgalidir's Pokédex" (or the friend's own name) with the app's
+  icon, which follows your theme, plus what you're doing ("Looking at
+  Charizard", "Doing a quiz", "Sorting the Boxes" …) and how many you've
+  caught. Turn it off in Settings → Discord. Needs the new installer.
+- The Luxury theme icon has a thin red band, like a real Luxury Ball.
+
 ## v2.78 · 16 Nov 2026
 
 - **New PC icon**, matching the Android one: a glossy Poké Ball lens on a deep

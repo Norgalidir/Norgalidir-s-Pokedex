@@ -287,6 +287,16 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
         <div style="font-size:12px;color:var(--color-neutral-400);margin-top:var(--space-2)">{{ lastBackupLabel }}</div>
       </details>
 
+      <sc-if value="{{ hasDiscord }}">
+      <details>
+        <summary>Discord</summary>
+        <label style="display:flex;gap:var(--space-2);align-items:flex-start;font-size:13px;cursor:pointer">
+          <input type="checkbox" checked="{{ discordOn }}" onChange="{{ onDiscord }}" style="margin-top:3px">
+          <span>Show what I'm doing on my Discord profile<br><span style="font-size:12px;color:var(--color-neutral-500)">"Playing {{ discordTitle }}" with the app's icon, what you're looking at and how many you've caught. Only while Discord is open on this PC.</span></span>
+        </label>
+      </details>
+      </sc-if>
+
       <sc-if value="{{ isPhone }}">
       <details open="{{ true }}">
         <summary>Phone app</summary>
@@ -3253,7 +3263,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 
   <div style="display:flex;justify-content:flex-start;gap:var(--space-3);align-items:baseline;padding:var(--space-8) var(--space-8) var(--space-6);font-size:11px;letter-spacing:.04em;color:var(--color-neutral-500);font-variant-numeric:tabular-nums">
     <span>Personal Pokédex⁠​‌​​​‌‌‌​‌​​‌​‌‌⁠</span>
-    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.78</span>
+    <span onClick="{{ onSig }}" style="color:var(--color-neutral-400);cursor:default">v2.79</span>
     <span>· 16 Nov 2026</span>
   </div>
 
@@ -3378,7 +3388,7 @@ select.input option{background:color-mix(in srgb, var(--color-surface) 88%, #000
 // Pokédex data and the sprite file settings, and asks for the owner's name.
 const FRIENDS = !!window.pokedexFriends;
 // Bump with every release (also the footer badge and the changelog).
-const APP_VERSION = '2.78';
+const APP_VERSION = '2.79';
 
 class Component extends DCLogic {
   constructor(p){
@@ -3896,7 +3906,29 @@ class Component extends DCLogic {
       if(k && all[k]){ all[k] = Object.assign({}, all[k], {ms: (all[k].ms || 0) + ms}); this.persist({shinyCount: all}); }
     }
   }
-  componentDidUpdate(){ this.huntTimer(); this.honourCheck(); const t = (this.state.save||{}).theme || 'Nocturne'; if(t !== this._theme){ this._theme = t; this.applyTheme(t); }
+  // Discord (desktop app): what you're doing, shown on your profile.
+  presenceTick(){
+    if(!window.pokedexPresence) return;
+    if(!this._presTimer) this._presTimer = setInterval(()=>this.presenceTick(), 15000);
+    const s = this.state.save || {}, st = this.state;
+    if(s.discordOff){ if(this._presKey !== 'off'){ this._presKey = 'off'; window.pokedexPresence(null); } return; }
+    const cur = st.view === 'dex' ? this.byNum(st.current) : null;
+    const VIEWS = {menu:'In the menu', list:'Browsing the Pokédex', pc:'Sorting the Boxes', gbox:'Planning game boxes',
+      enc:'Checking encounters', gifts:'Looking through events', breed:'Planning some breeding', team:'Building a team',
+      calc:'Doing some calculations', trainer:'On the Trainer Card', journal:'Reading the journal', compare:'Comparing with a friend',
+      challenge:'Planning a challenge run'};
+    let details = cur ? 'Looking at ' + cur.name : (VIEWS[st.view] || 'Using the Pokédex');
+    if(document.getElementById('pk-quiz')) details = document.querySelector('#pk-quiz [aria-label="Dex number trainer"], #pk-quiz[aria-label="Dex number trainer"]') ? 'Learning dex numbers' : 'Doing a quiz';
+    else if(st.wtfOpen && cur) details = 'Finding where to catch ' + cur.name;
+    const sp = {}; Object.keys(s.caught || {}).forEach(k=>{ if(s.caught[k]) sp[String(k).split(':')[0]] = 1; });
+    const caught = Object.keys(sp).length, total = (this.all() || []).length || 1025;
+    const shinyN = Object.keys(s.shinyCaught || {}).filter(k=>s.shinyCaught[k]).length;
+    const state = caught + ' / ' + total + ' caught' + (shinyN ? ' · ' + shinyN + ' shiny' : '');
+    const info = {details: details, state: state, theme: s.theme || 'Nocturne', title: this.ownerTitle(s) + ' Pokédex'};
+    const key = JSON.stringify(info);
+    if(key !== this._presKey){ this._presKey = key; try { window.pokedexPresence(info); } catch(e){} }
+  }
+  componentDidUpdate(){ this.huntTimer(); this.honourCheck(); this.presenceTick(); const t = (this.state.save||{}).theme || 'Nocturne'; if(t !== this._theme){ this._theme = t; this.applyTheme(t); }
     if(this.state.ready && !this._tabs){ this.tabsLoad(); this.forceUpdate(); }
     if(this._prevView !== undefined && this.state.view !== this._prevView && !this._tabApplying && window.pkScreen) window.pkScreen.blip();
     this._prevView = this.state.view;
@@ -7695,6 +7727,8 @@ class Component extends DCLogic {
         const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
         inp.onchange = () => { if(inp.files[0]) this.readFileTo(inp.files[0], k); };
         inp.click(); },
+      hasDiscord: !!window.pokedexPresence, discordOn: !s.discordOff, discordTitle: this.ownerTitle(s) + ' Pokédex',
+      onDiscord: e => this.persist({discordOff: !e.target.checked}),
       ...(() => { const P = window.PokedexAndroid; if(!P) return {isPhone: false};
         let n = 0, v = ''; try { n = P.spriteCount(); v = P.version(); } catch(e){}
         return {isPhone: true,
